@@ -33,38 +33,48 @@ body {
 }
 .header-left h1 { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
 .header-left p { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 4px; }
-.fz-wordmark {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px; padding: 8px 14px; white-space: nowrap;
-  backdrop-filter: blur(4px);
-}
-.fz-wordmark span { color: #fff; font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-
-/* ── Timeline ── */
-.timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px; }
-.tl-step { text-align: center; }
-.tl-bar { height: 4px; background: #e5e7eb; border-radius: 2px; margin-bottom: 7px; }
-.tl-label { font-size: 11px; color: #9ca3af; font-weight: 500; letter-spacing: 0.01em; }
-.tl-step.done .tl-bar { background: #16a34a; }
-.tl-step.done .tl-label { color: #16a34a; }
-.tl-step.active .tl-bar { background: #1566C0; }
-.tl-step.active .tl-label { color: #1566C0; font-weight: 700; }
-
-/* ── Overall progress ── */
-.overall-progress {
+.header-logo-wrap {
   background: #fff;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  display: flex; align-items: center; gap: 16px;
+  border-radius: 10px;
+  padding: 7px 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.header-logo-wrap img { height: 40px; width: auto; display: block; }
+
+/* ── Meetings ── */
+.meetings-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
 }
-.overall-label { font-size: 13px; color: #6b7280; white-space: nowrap; font-weight: 500; }
-.overall-track { flex: 1; height: 7px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
-.overall-fill { height: 100%; background: linear-gradient(90deg, #1566C0, #1d7fd4); border-radius: 4px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
-.overall-pct { font-size: 14px; font-weight: 700; color: #111827; white-space: nowrap; min-width: 38px; text-align: right; }
+.meetings-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.meetings-icon { width: 36px; height: 36px; border-radius: 10px; background: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.meetings-title { font-size: 14px; font-weight: 700; color: #111827; letter-spacing: -0.1px; }
+.meetings-subtitle { font-size: 12px; color: #9ca3af; margin-top: 1px; }
+.meetings-body { border-top: 1px solid #f3f4f6; }
+.meeting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 12px 20px; border-top: 1px solid #f3f4f6;
+}
+.meeting-row:first-child { border-top: none; }
+.meeting-info { min-width: 0; }
+.meeting-name { font-size: 13.5px; font-weight: 600; color: #111827; line-height: 1.3; }
+.meeting-datetime { font-size: 12px; color: #6b7280; margin-top: 3px; }
+.join-btn {
+  flex-shrink: 0; font-size: 12px; font-weight: 600; color: #1566C0;
+  background: #eff6ff; border: none; border-radius: 7px; padding: 6px 14px;
+  cursor: pointer; font-family: inherit; text-decoration: none;
+  transition: background 0.12s; white-space: nowrap; display: inline-block;
+}
+.join-btn:hover { background: #dbeafe; }
+.no-meetings { padding: 20px; text-align: center; color: #9ca3af; font-size: 13px; }
+
 
 /* ── Cards ── */
 .card {
@@ -101,12 +111,6 @@ body {
 .card-body { border-top: 1px solid #f3f4f6; }
 .card.collapsed .card-body { display: none; }
 
-/* ── Section progress bar ── */
-.prog-wrap { padding: 14px 20px 6px; }
-.prog-track { height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
-.prog-fill { height: 100%; background: linear-gradient(90deg, #1566C0, #1d7fd4); border-radius: 3px; transition: width 0.3s cubic-bezier(.4,0,.2,1); }
-.prog-fill.complete { background: linear-gradient(90deg, #16a34a, #22c55e); }
-.prog-label { font-size: 11px; color: #9ca3af; text-align: right; margin-top: 6px; font-weight: 500; }
 
 /* ── Notes ── */
 .note { padding: 10px 20px; font-size: 12.5px; color: #1d4ed8; line-height: 1.55; border-top: 1px solid #f3f4f6; background: #eff6ff; }
@@ -219,27 +223,23 @@ body {
       <h1>Onboarding Checklist</h1>
       <p>Complete these before your 2-week check-in &amp; go-live</p>
     </div>
-    <div class="fz-wordmark">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M4 6h16M4 10h10M4 14h6M4 18h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        <path d="M16 14l3 3-3 3" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>Floorzap</span>
+    <div class="header-logo-wrap">
+      <img src="fz-logo-630x420.png" alt="Floorzap">
     </div>
   </div>
 
-  <div class="timeline">
-    <div class="tl-step done"><div class="tl-bar"></div><div class="tl-label">Kickoff</div></div>
-    <div class="tl-step active"><div class="tl-bar"></div><div class="tl-label">Setup</div></div>
-    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">2-week</div></div>
-    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">Go-live</div></div>
-    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">Graduation</div></div>
-  </div>
-
-  <div class="overall-progress">
-    <span class="overall-label">Overall progress</span>
-    <div class="overall-track"><div class="overall-fill" id="overall-fill" style="width:0%"></div></div>
-    <span class="overall-pct" id="overall-pct">0%</span>
+  <!-- Meetings -->
+  <div class="meetings-card" id="meetings-card">
+    <div class="meetings-header">
+      <div class="meetings-icon">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#1d4ed8" stroke-width="1.5"/><path d="M2 6h12" stroke="#1d4ed8" stroke-width="1.5"/><path d="M5 1v2M11 1v2" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div class="meetings-title">Upcoming meetings</div>
+        <div class="meetings-subtitle" id="meetings-subtitle"></div>
+      </div>
+    </div>
+    <div class="meetings-body" id="meetings-body"></div>
   </div>
 
   <!-- System Configuration -->
@@ -260,10 +260,6 @@ body {
       </div>
     </div>
     <div class="card-body">
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="bar-sys" style="width:0%"></div></div>
-        <div class="prog-label" id="lbl-sys">0 of 8 complete</div>
-      </div>
       <div class="task"><div class="cb" id="cb-sys-0" onclick="tick('sys',0)"></div><div class="task-body"><div class="task-name" id="tn-sys-0">Locations</div><div class="task-desc">Add all store locations where your business operates</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-set-up-a-location-" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-1" onclick="tick('sys',1)"></div><div class="task-body"><div class="task-name" id="tn-sys-1">Employees &amp; users</div><div class="task-desc">Add all team members — check "Send Email Confirmation" so they can set their own password and log in</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-to-add-a-new-employee-user" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-2" onclick="tick('sys',2)"></div><div class="task-body"><div class="task-name" id="tn-sys-2">Contractors &amp; subs</div><div class="task-desc">Start with the "Installer TBD" placeholder your specialist set up, then add your real contractors</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-add-a-contractor-or-sub-contractor" target="_blank">How-to guide ↗</a></div></div></div>
@@ -293,10 +289,6 @@ body {
       </div>
     </div>
     <div class="card-body">
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="bar-b2b" style="width:0%"></div></div>
-        <div class="prog-label" id="lbl-b2b">0 of 4 complete</div>
-      </div>
       <div class="task"><div class="cb" id="cb-b2b-0" onclick="tick('b2b',0)"></div><div class="task-body"><div class="task-name" id="tn-b2b-0">Verify your vendor is B2B-enabled</div><div class="task-desc">Check the vendor directory at fcb2b.info/connections before reaching out</div><div class="task-links"><a class="task-link" href="https://fcb2b.info/connections/" target="_blank">Check vendors ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-b2b-1" onclick="tick('b2b',1)"></div><div class="task-body">
         <div class="task-name" id="tn-b2b-1">Email vendor for B2B credentials</div>
@@ -346,10 +338,6 @@ Regards,</div>
       </div>
     </div>
     <div class="card-body">
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="bar-mig" style="width:0%"></div></div>
-        <div class="prog-label" id="lbl-mig">0 of 4 complete</div>
-      </div>
       <div class="note amber">Download each template below, fill it out, and send the completed file to your onboarding specialist. Start early — processing takes 2–3 weeks after files are received.</div>
       <div class="task"><div class="cb" id="cb-mig-0" onclick="tick('mig',0)"></div><div class="task-body"><div class="task-name" id="tn-mig-0">Labor cost list</div><div class="task-desc">All labor items (install, tear down, etc.) — include cost, margin, and unit type (sqft, each, LF)</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1pc2tmMpyRHJrx4IQayYFZvCPlxohXe_k/edit?gid=695381032#gid=695381032" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/creating-a-labor-cost-list" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-mig-1" onclick="tick('mig',1)"></div><div class="task-body"><div class="task-name" id="tn-mig-1">Customer list</div><div class="task-desc">First and last name, or company name required at minimum</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1GMRgjz3uDvu540VO-gCMNnL6lXE5KkFS/edit?gid=92032769#gid=92032769" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/how-do-i-create-a-customer-import-list" target="_blank">How-to guide ↗</a></div></div></div>
@@ -376,10 +364,6 @@ Regards,</div>
       </div>
     </div>
     <div class="card-body">
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="bar-qs" style="width:0%"></div></div>
-        <div class="prog-label" id="lbl-qs">0 of 4 complete</div>
-      </div>
       <div class="note">90-minute trainer-led sessions — same content runs every week. Attend each at least once and bring the right team members. Recordings are available if someone misses a session.</div>
       <div class="task"><div class="cb" id="cb-qs-0" onclick="tick('qs',0)"></div><div class="task-body"><div class="task-name" id="tn-qs-0">Session 1 — Leads, quotes &amp; invoices</div><div class="task-desc">Tuesdays 2:00 PM CT &nbsp;·&nbsp; Invite: sales team, office staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/Il3_-qj8SXKzQaYKPsq-NA#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-1-recording" target="_blank">Recording ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-qs-1" onclick="tick('qs',1)"></div><div class="task-body"><div class="task-name" id="tn-qs-1">Session 2 — Work orders &amp; scheduling</div><div class="task-desc">Wednesdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/zEhS94XVRRq5WhRCkjbqiQ#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-2-recording" target="_blank">Recording ↗</a></div></div></div>
@@ -412,11 +396,56 @@ Regards,</div>
 </div>
 
 <script>
+/* ─────────────────────────────────────────────────────────────
+   UPCOMING MEETINGS — fill these in before sharing with the customer.
+   Leave the array empty ([]) to hide the section entirely.
+
+   Fields:
+     name  – meeting title shown to the customer
+     date  – display date, e.g. "June 3, 2026"
+     time  – display time, e.g. "2:00 PM CT"
+     zoom  – full Zoom join URL (leave "" to omit the Join button)
+───────────────────────────────────────────────────────────── */
+var MEETINGS = [
+  // { name: "2-Week Check-in",  date: "June 3, 2026",  time: "2:00 PM CT",  zoom: "https://zoom.us/j/..." },
+  // { name: "Go-Live Review",   date: "June 17, 2026", time: "10:00 AM CT", zoom: "" },
+];
+
 var TOTALS = { sys: 8, b2b: 4, mig: 4, qs: 4 };
-var TOTAL_FIXED = 20;
 var STATE = { sys: [], b2b: [], mig: [], qs: [], custom: [] };
 
 var EMAIL_TEMPLATE = "Hello,\nCan you please respond with our B2B credentials?\n\nPlease reset our password if we currently have credentials set up and send a new, full catalog.\n\nCompany Name:\nCompany Phone:\nCompany Contact Name:\nCompany Contact Phone:\nCompany Contact Email:\nAccount #:\nSoftware Provider: Floorzap\nB2B File Version: 832\n\nRegards,";
+
+/* ── Meetings render ── */
+function renderMeetings() {
+  var card = document.getElementById('meetings-card');
+  var body = document.getElementById('meetings-body');
+  var sub  = document.getElementById('meetings-subtitle');
+  if (!MEETINGS.length) { card.style.display = 'none'; return; }
+  sub.textContent = MEETINGS.length === 1 ? '1 meeting scheduled' : MEETINGS.length + ' meetings scheduled';
+  body.innerHTML = '';
+  MEETINGS.forEach(function(m) {
+    var row = document.createElement('div');
+    row.className = 'meeting-row';
+    var info = document.createElement('div');
+    info.className = 'meeting-info';
+    info.innerHTML = '<div class="meeting-name">' + escHtml(m.name) + '</div>'
+      + '<div class="meeting-datetime">' + escHtml(m.date) + (m.time ? ' &nbsp;·&nbsp; ' + escHtml(m.time) : '') + '</div>';
+    row.appendChild(info);
+    if (m.zoom) {
+      var btn = document.createElement('a');
+      btn.className = 'join-btn';
+      btn.href = m.zoom;
+      btn.target = '_blank';
+      btn.textContent = 'Join Zoom ↗';
+      row.appendChild(btn);
+    }
+    body.appendChild(row);
+  });
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 /* ── localStorage state ── */
 var LS_KEY = 'fz-onboarding-v1';
@@ -446,8 +475,8 @@ function loadState() {
     });
     updateSection(sec);
   });
+  renderMeetings();
   renderCustomTasks();
-  updateOverall();
 }
 
 /* ── Fixed tasks ── */
@@ -458,35 +487,16 @@ function tick(sec, i) {
   if (idx > -1) { STATE[sec].splice(idx, 1); cb.classList.remove('on'); tn.classList.remove('done'); }
   else { STATE[sec].push(i); cb.classList.add('on'); tn.classList.add('done'); }
   updateSection(sec);
-  updateOverall();
   saveState();
 }
 function updateSection(sec) {
   var done = STATE[sec].length;
   var total = TOTALS[sec];
-  var pct = Math.round(done / total * 100);
-  var bar = document.getElementById('bar-' + sec);
-  var lbl = document.getElementById('lbl-' + sec);
   var meta = document.getElementById('meta-' + sec);
-  if (bar) { bar.style.width = pct + '%'; if (done === total) bar.classList.add('complete'); else bar.classList.remove('complete'); }
-  if (lbl) lbl.textContent = done + ' of ' + total + ' complete';
   if (meta) {
     if (done === total) { meta.textContent = 'All done ✓'; meta.style.color = '#16a34a'; }
     else { meta.textContent = total + (sec === 'qs' ? ' sessions' : ' tasks'); meta.style.color = ''; }
   }
-}
-function updateOverall() {
-  var fixedDone = 0;
-  Object.keys(TOTALS).forEach(function(sec) { fixedDone += STATE[sec].length; });
-  var customDone = STATE.custom.filter(function(t) { return t.d; }).length;
-  var customTotal = STATE.custom.length;
-  var totalDone = fixedDone + customDone;
-  var totalAll = TOTAL_FIXED + customTotal;
-  var pct = totalAll > 0 ? Math.round(totalDone / totalAll * 100) : 0;
-  var fill = document.getElementById('overall-fill');
-  var label = document.getElementById('overall-pct');
-  if (fill) fill.style.width = pct + '%';
-  if (label) label.textContent = pct + '%';
 }
 
 /* ── Custom tasks ── */
@@ -523,13 +533,11 @@ function renderCustomTasks() {
 function tickCustom(idx) {
   STATE.custom[idx].d = !STATE.custom[idx].d;
   renderCustomTasks();
-  updateOverall();
   saveState();
 }
 function deleteCustomTask(idx) {
   STATE.custom.splice(idx, 1);
   renderCustomTasks();
-  updateOverall();
   saveState();
 }
 function addCustomTask() {
@@ -539,7 +547,6 @@ function addCustomTask() {
   STATE.custom.push({ t: text, d: false });
   input.value = '';
   renderCustomTasks();
-  updateOverall();
   saveState();
 }
 function handleAddKey(e) {
