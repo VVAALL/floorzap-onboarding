@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floorzap Onboarding Checklist</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f0f2f5;
+  color: #111827;
+  min-height: 100vh;
+  padding: 32px 16px 80px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.container { max-width: 680px; margin: 0 auto; }
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, #1050a8 0%, #1566C0 55%, #1d7fd4 100%);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(21,102,192,0.25);
+}
+.header-left h1 { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+.header-left p { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 4px; }
+.fz-wordmark {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px; padding: 8px 14px; white-space: nowrap;
+  backdrop-filter: blur(4px);
+}
+.fz-wordmark span { color: #fff; font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+
+/* ── Timeline ── */
+.timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px; }
+.tl-step { text-align: center; }
+.tl-bar { height: 4px; background: #e5e7eb; border-radius: 2px; margin-bottom: 7px; }
+.tl-label { font-size: 11px; color: #9ca3af; font-weight: 500; letter-spacing: 0.01em; }
+.tl-step.done .tl-bar { background: #16a34a; }
+.tl-step.done .tl-label { color: #16a34a; }
+.tl-step.active .tl-bar { background: #1566C0; }
+.tl-step.active .tl-label { color: #1566C0; font-weight: 700; }
+
+/* ── Overall progress ── */
+.overall-progress {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+}
+.overall-label { font-size: 13px; color: #6b7280; white-space: nowrap; font-weight: 500; }
+.overall-track { flex: 1; height: 7px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
+.overall-fill { height: 100%; background: linear-gradient(90deg, #1566C0, #1d7fd4); border-radius: 4px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+.overall-pct { font-size: 14px; font-weight: 700; color: #111827; white-space: nowrap; min-width: 38px; text-align: right; }
+
+/* ── Cards ── */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.05); }
+.card-header {
+  padding: 16px 20px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  cursor: pointer; user-select: none; gap: 12px;
+  transition: background 0.12s;
+}
+.card-header:hover { background: #fafafa; }
+.card-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-title { font-size: 14px; font-weight: 700; color: #111827; letter-spacing: -0.1px; }
+.card-meta { font-size: 12px; color: #9ca3af; margin-top: 1px; }
+.card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.01em; }
+.pill-blue { background: #eff6ff; color: #1d4ed8; }
+.pill-amber { background: #fffbeb; color: #b45309; }
+.pill-green { background: #f0fdf4; color: #16a34a; }
+.chevron {
+  width: 20px; height: 20px; color: #d1d5db; flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: center;
+}
+.card.collapsed .chevron { transform: rotate(-90deg); }
+.card-body { border-top: 1px solid #f3f4f6; }
+.card.collapsed .card-body { display: none; }
+
+/* ── Section progress bar ── */
+.prog-wrap { padding: 14px 20px 6px; }
+.prog-track { height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #1566C0, #1d7fd4); border-radius: 3px; transition: width 0.3s cubic-bezier(.4,0,.2,1); }
+.prog-fill.complete { background: linear-gradient(90deg, #16a34a, #22c55e); }
+.prog-label { font-size: 11px; color: #9ca3af; text-align: right; margin-top: 6px; font-weight: 500; }
+
+/* ── Notes ── */
+.note { padding: 10px 20px; font-size: 12.5px; color: #1d4ed8; line-height: 1.55; border-top: 1px solid #f3f4f6; background: #eff6ff; }
+.note.amber { background: #fffbeb; color: #92400e; }
+
+/* ── Tasks ── */
+.task { display: flex; align-items: flex-start; gap: 14px; padding: 12px 20px; border-top: 1px solid #f3f4f6; }
+.task:first-child { border-top: none; }
+.cb {
+  width: 18px; height: 18px; min-width: 18px; border-radius: 5px;
+  border: 1.5px solid #d1d5db; cursor: pointer; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; transition: background 0.12s, border-color 0.12s, transform 0.1s; flex-shrink: 0;
+}
+.cb:hover { border-color: #1566C0; transform: scale(1.08); }
+.cb.on { background: #1566C0; border-color: #1566C0; }
+.cb.on::after {
+  content: ''; display: block; width: 9px; height: 5px;
+  border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+  transform: rotate(-45deg); margin-top: -2px;
+}
+.task-body { flex: 1; min-width: 0; }
+.task-name { font-size: 13.5px; color: #111827; font-weight: 500; line-height: 1.4; }
+.task-name.done { text-decoration: line-through; color: #9ca3af; font-weight: 400; }
+.task-desc { font-size: 12px; color: #6b7280; margin-top: 3px; line-height: 1.45; }
+.task-links { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+.task-link { font-size: 12px; color: #1566C0; text-decoration: none; font-weight: 600; transition: color 0.1s; }
+.task-link:hover { color: #1050a8; text-decoration: underline; }
+
+/* ── Email template ── */
+.email-block {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; margin-top: 10px; overflow: hidden;
+}
+.email-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; border-bottom: 1px solid #e5e7eb; background: #f3f4f6;
+}
+.email-block-label { font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: 0.06em; text-transform: uppercase; }
+.copy-btn {
+  font-size: 12px; font-weight: 600; color: #1566C0; background: #fff;
+  border: 1px solid #d1d5db; border-radius: 6px; padding: 4px 12px; cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+.copy-btn:hover { background: #eff6ff; border-color: #1566C0; }
+.copy-btn.copied { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
+.email-body { padding: 12px 14px; font-size: 12px; color: #374151; line-height: 1.7; white-space: pre-wrap; font-family: inherit; }
+.email-field { color: #9ca3af; }
+
+/* ── Custom To-Do Section ── */
+.custom-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+}
+.custom-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.custom-icon { width: 36px; height: 36px; border-radius: 10px; background: #f5f3ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.custom-title { font-size: 14px; font-weight: 700; color: #111827; letter-spacing: -0.1px; }
+.custom-subtitle { font-size: 12px; color: #9ca3af; margin-top: 1px; }
+.custom-body { border-top: 1px solid #f3f4f6; }
+
+.add-task-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-top: 1px solid #f3f4f6;
+}
+.add-task-input {
+  flex: 1; font-size: 13.5px; color: #111827; font-family: inherit;
+  border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 8px 12px;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  background: #fafafa;
+}
+.add-task-input:focus { border-color: #1566C0; box-shadow: 0 0 0 3px rgba(21,102,192,0.1); background: #fff; }
+.add-task-input::placeholder { color: #9ca3af; }
+.add-btn {
+  flex-shrink: 0; background: #1566C0; color: #fff; border: none;
+  border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.12s, transform 0.1s;
+  white-space: nowrap;
+}
+.add-btn:hover { background: #1050a8; }
+.add-btn:active { transform: scale(0.97); }
+
+.custom-task { display: flex; align-items: flex-start; gap: 14px; padding: 11px 20px; border-top: 1px solid #f3f4f6; }
+.custom-task-name { flex: 1; font-size: 13.5px; color: #111827; font-weight: 500; line-height: 1.4; min-width: 0; word-break: break-word; padding-top: 1px; }
+.custom-task-name.done { text-decoration: line-through; color: #9ca3af; font-weight: 400; }
+.delete-btn {
+  width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; color: #d1d5db; border-radius: 5px;
+  transition: color 0.12s, background 0.12s; margin-top: 0;
+}
+.delete-btn:hover { color: #ef4444; background: #fff1f2; }
+
+.empty-custom {
+  padding: 24px 20px; text-align: center; color: #9ca3af; font-size: 13px;
+  border-top: 1px solid #f3f4f6;
+}
+.empty-custom span { display: block; font-size: 22px; margin-bottom: 6px; opacity: 0.5; }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Onboarding Checklist</h1>
+      <p>Complete these before your 2-week check-in &amp; go-live</p>
+    </div>
+    <div class="fz-wordmark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M4 6h16M4 10h10M4 14h6M4 18h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 14l3 3-3 3" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Floorzap</span>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-step done"><div class="tl-bar"></div><div class="tl-label">Kickoff</div></div>
+    <div class="tl-step active"><div class="tl-bar"></div><div class="tl-label">Setup</div></div>
+    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">2-week</div></div>
+    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">Go-live</div></div>
+    <div class="tl-step"><div class="tl-bar"></div><div class="tl-label">Graduation</div></div>
+  </div>
+
+  <div class="overall-progress">
+    <span class="overall-label">Overall progress</span>
+    <div class="overall-track"><div class="overall-fill" id="overall-fill" style="width:0%"></div></div>
+    <span class="overall-pct" id="overall-pct">0%</span>
+  </div>
+
+  <!-- System Configuration -->
+  <div class="card" id="c-sys">
+    <div class="card-header" onclick="toggleCard('c-sys')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#eff6ff;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1.5" fill="#1d4ed8"/><rect x="9" y="2" width="5" height="5" rx="1.5" fill="#1d4ed8" opacity="0.35"/><rect x="2" y="9" width="5" height="5" rx="1.5" fill="#1d4ed8" opacity="0.35"/><rect x="9" y="9" width="5" height="5" rx="1.5" fill="#1d4ed8" opacity="0.6"/></svg>
+        </div>
+        <div>
+          <div class="card-title">System configuration</div>
+          <div class="card-meta" id="meta-sys">8 tasks</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-blue">Before 2-week</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="bar-sys" style="width:0%"></div></div>
+        <div class="prog-label" id="lbl-sys">0 of 8 complete</div>
+      </div>
+      <div class="task"><div class="cb" id="cb-sys-0" onclick="tick('sys',0)"></div><div class="task-body"><div class="task-name" id="tn-sys-0">Locations</div><div class="task-desc">Add all store locations where your business operates</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-set-up-a-location-" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-1" onclick="tick('sys',1)"></div><div class="task-body"><div class="task-name" id="tn-sys-1">Employees &amp; users</div><div class="task-desc">Add all team members — check "Send Email Confirmation" so they can set their own password and log in</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-to-add-a-new-employee-user" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-2" onclick="tick('sys',2)"></div><div class="task-body"><div class="task-name" id="tn-sys-2">Contractors &amp; subs</div><div class="task-desc">Start with the "Installer TBD" placeholder your specialist set up, then add your real contractors</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-add-a-contractor-or-sub-contractor" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-3" onclick="tick('sys',3)"></div><div class="task-body"><div class="task-name" id="tn-sys-3">Bank &amp; credit accounts</div><div class="task-desc">Add all accounts — if using QuickBooks Online, names here must match QBO exactly</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/adding-your-bank/credit-accounts" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-4" onclick="tick('sys',4)"></div><div class="task-body"><div class="task-name" id="tn-sys-4">Commission settings</div><div class="task-desc">Edit or delete the defaults to match your commission structure</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/where-do-i-edit-or-add-commission-settings" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-5" onclick="tick('sys',5)"></div><div class="task-body"><div class="task-name" id="tn-sys-5">Warehouses</div><div class="task-desc">Any location you send an installer to pick up materials — onsite, offsite, will call, third party</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/what-is-the-warehouse-section-for" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-6" onclick="tick('sys',6)"></div><div class="task-body"><div class="task-name" id="tn-sys-6">Completion checklist</div><div class="task-desc">Personalize the default template — add, edit, or remove questions for your workflow</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/completion-checklist" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-7" onclick="tick('sys',7)"></div><div class="task-body"><div class="task-name" id="tn-sys-7">Contract templates</div><div class="task-desc">Edit the defaults or replace with your own contract language</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/contract-templates" target="_blank">How-to guide ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- B2B Integration -->
+  <div class="card" id="c-b2b">
+    <div class="card-header" onclick="toggleCard('c-b2b')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#f0fdf4;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2z" stroke="#16a34a" stroke-width="1.5"/><path d="M5.5 8h5M8 5.5v5" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="card-title">B2B integration</div>
+          <div class="card-meta" id="meta-b2b">4 tasks</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-blue">Before 2-week</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="bar-b2b" style="width:0%"></div></div>
+        <div class="prog-label" id="lbl-b2b">0 of 4 complete</div>
+      </div>
+      <div class="task"><div class="cb" id="cb-b2b-0" onclick="tick('b2b',0)"></div><div class="task-body"><div class="task-name" id="tn-b2b-0">Verify your vendor is B2B-enabled</div><div class="task-desc">Check the vendor directory at fcb2b.info/connections before reaching out</div><div class="task-links"><a class="task-link" href="https://fcb2b.info/connections/" target="_blank">Check vendors ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-b2b-1" onclick="tick('b2b',1)"></div><div class="task-body">
+        <div class="task-name" id="tn-b2b-1">Email vendor for B2B credentials</div>
+        <div class="task-desc">Copy the template below, fill in your company details, and send it to your vendor's support team</div>
+        <div class="email-block">
+          <div class="email-block-header">
+            <span class="email-block-label">Email template</span>
+            <button class="copy-btn" id="copy-btn" onclick="copyTemplate()">Copy</button>
+          </div>
+          <div class="email-body">Hello,
+Can you please respond with our B2B credentials?
+
+Please reset our password if we currently have credentials set up and send a new, full catalog.
+
+<span class="email-field">Company Name:
+Company Phone:
+Company Contact Name:
+Company Contact Phone:
+Company Contact Email:
+Account #:</span>
+Software Provider: Floorzap
+B2B File Version: 832
+
+Regards,</div>
+        </div>
+      </div></div>
+      <div class="task"><div class="cb" id="cb-b2b-2" onclick="tick('b2b',2)"></div><div class="task-body"><div class="task-name" id="tn-b2b-2">Enter credentials in Floorzap</div><div class="task-desc">Paste the username and password from the vendor's reply, enable B2B, and save</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/b2b-setup-guide" target="_blank">Setup guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-b2b-3" onclick="tick('b2b',3)"></div><div class="task-body"><div class="task-name" id="tn-b2b-3">Import your B2B catalog</div><div class="task-desc">Once credentials are active, import your full product catalog into Floorzap</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/b2b-setup-guide" target="_blank">Setup guide ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- Data Migration -->
+  <div class="card" id="c-mig">
+    <div class="card-header" onclick="toggleCard('c-mig')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#fffbeb;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7.5h7M3 11h5" stroke="#b45309" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Data migration</div>
+          <div class="card-meta" id="meta-mig">4 tasks</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-amber">Allow 2–3 weeks</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="bar-mig" style="width:0%"></div></div>
+        <div class="prog-label" id="lbl-mig">0 of 4 complete</div>
+      </div>
+      <div class="note amber">Download each template below, fill it out, and send the completed file to your onboarding specialist. Start early — processing takes 2–3 weeks after files are received.</div>
+      <div class="task"><div class="cb" id="cb-mig-0" onclick="tick('mig',0)"></div><div class="task-body"><div class="task-name" id="tn-mig-0">Labor cost list</div><div class="task-desc">All labor items (install, tear down, etc.) — include cost, margin, and unit type (sqft, each, LF)</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1pc2tmMpyRHJrx4IQayYFZvCPlxohXe_k/edit?gid=695381032#gid=695381032" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/creating-a-labor-cost-list" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-1" onclick="tick('mig',1)"></div><div class="task-body"><div class="task-name" id="tn-mig-1">Customer list</div><div class="task-desc">First and last name, or company name required at minimum</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1GMRgjz3uDvu540VO-gCMNnL6lXE5KkFS/edit?gid=92032769#gid=92032769" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/how-do-i-create-a-customer-import-list" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-2" onclick="tick('mig',2)"></div><div class="task-body"><div class="task-name" id="tn-mig-2">Vendor list</div><div class="task-desc">Vendor name is required — include any additional contact details you have</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1rng2YFE8rh_vP07yLUIB0J-3u7fYdxww/edit?gid=1292759137#gid=1292759137" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/vendor-import-template" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-3" onclick="tick('mig',3)"></div><div class="task-body"><div class="task-name" id="tn-mig-3">Non-B2B products</div><div class="task-desc">One template per vendor — your specialist reviews and confirms before import</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1STO6eijj02b1f7WRqqZjR6_FVDY7L7OE/edit?gid=1722535537#gid=1722535537" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/adding-non-b2b-vendors-non-b2b-material-import" target="_blank">How-to guide ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- Quick Start Training -->
+  <div class="card" id="c-qs">
+    <div class="card-header" onclick="toggleCard('c-qs')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#eff6ff;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="1.5" stroke="#1d4ed8" stroke-width="1.5"/><path d="M6 11v2M10 11v2M4 13h8" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 6.5L9.5 8 6.5 9.5V6.5z" fill="#1d4ed8"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Quick start training</div>
+          <div class="card-meta" id="meta-qs">4 sessions</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-blue">Before 2-week</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="bar-qs" style="width:0%"></div></div>
+        <div class="prog-label" id="lbl-qs">0 of 4 complete</div>
+      </div>
+      <div class="note">90-minute trainer-led sessions — same content runs every week. Attend each at least once and bring the right team members. Recordings are available if someone misses a session.</div>
+      <div class="task"><div class="cb" id="cb-qs-0" onclick="tick('qs',0)"></div><div class="task-body"><div class="task-name" id="tn-qs-0">Session 1 — Leads, quotes &amp; invoices</div><div class="task-desc">Tuesdays 2:00 PM CT &nbsp;·&nbsp; Invite: sales team, office staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/Il3_-qj8SXKzQaYKPsq-NA#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-1-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-1" onclick="tick('qs',1)"></div><div class="task-body"><div class="task-name" id="tn-qs-1">Session 2 — Work orders &amp; scheduling</div><div class="task-desc">Wednesdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/zEhS94XVRRq5WhRCkjbqiQ#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-2-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-2" onclick="tick('qs',2)"></div><div class="task-body"><div class="task-name" id="tn-qs-2">Session 3 — Inventory &amp; payments</div><div class="task-desc">Thursdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/ErkXjsriQT-b_p0dOComRg#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-3-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-3" onclick="tick('qs',3)"></div><div class="task-body"><div class="task-name" id="tn-qs-3">Session 4 — Reports &amp; advanced settings</div><div class="task-desc">Fridays 2:00 PM CT &nbsp;·&nbsp; Invite: office staff, admins</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/qaTPf4BYRc66LB6a39OTmw#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-4-recording" target="_blank">Recording ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- Custom To-Do -->
+  <div class="custom-card">
+    <div class="custom-header">
+      <div class="custom-icon">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3v10" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div class="custom-title">My tasks</div>
+        <div class="custom-subtitle" id="custom-subtitle">Add your own to-dos for this onboarding</div>
+      </div>
+    </div>
+    <div class="custom-body">
+      <div id="custom-list"></div>
+      <div class="add-task-row">
+        <input class="add-task-input" id="new-task-input" type="text" placeholder="Add a task…" maxlength="200" onkeydown="handleAddKey(event)">
+        <button class="add-btn" onclick="addCustomTask()">Add</button>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+var TOTALS = { sys: 8, b2b: 4, mig: 4, qs: 4 };
+var TOTAL_FIXED = 20;
+var STATE = { sys: [], b2b: [], mig: [], qs: [], custom: [] };
+
+var EMAIL_TEMPLATE = "Hello,\nCan you please respond with our B2B credentials?\n\nPlease reset our password if we currently have credentials set up and send a new, full catalog.\n\nCompany Name:\nCompany Phone:\nCompany Contact Name:\nCompany Contact Phone:\nCompany Contact Email:\nAccount #:\nSoftware Provider: Floorzap\nB2B File Version: 832\n\nRegards,";
+
+/* ── localStorage state ── */
+var LS_KEY = 'fz-onboarding-v1';
+function saveState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
+}
+function loadState() {
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        STATE.sys    = Array.isArray(parsed.sys)    ? parsed.sys    : [];
+        STATE.b2b    = Array.isArray(parsed.b2b)    ? parsed.b2b    : [];
+        STATE.mig    = Array.isArray(parsed.mig)    ? parsed.mig    : [];
+        STATE.qs     = Array.isArray(parsed.qs)     ? parsed.qs     : [];
+        STATE.custom = Array.isArray(parsed.custom) ? parsed.custom : [];
+      }
+    }
+  } catch(e) {}
+  Object.keys(TOTALS).forEach(function(sec) {
+    STATE[sec].forEach(function(i) {
+      var cb = document.getElementById('cb-' + sec + '-' + i);
+      var tn = document.getElementById('tn-' + sec + '-' + i);
+      if (cb) cb.classList.add('on');
+      if (tn) tn.classList.add('done');
+    });
+    updateSection(sec);
+  });
+  renderCustomTasks();
+  updateOverall();
+}
+
+/* ── Fixed tasks ── */
+function tick(sec, i) {
+  var cb = document.getElementById('cb-' + sec + '-' + i);
+  var tn = document.getElementById('tn-' + sec + '-' + i);
+  var idx = STATE[sec].indexOf(i);
+  if (idx > -1) { STATE[sec].splice(idx, 1); cb.classList.remove('on'); tn.classList.remove('done'); }
+  else { STATE[sec].push(i); cb.classList.add('on'); tn.classList.add('done'); }
+  updateSection(sec);
+  updateOverall();
+  saveState();
+}
+function updateSection(sec) {
+  var done = STATE[sec].length;
+  var total = TOTALS[sec];
+  var pct = Math.round(done / total * 100);
+  var bar = document.getElementById('bar-' + sec);
+  var lbl = document.getElementById('lbl-' + sec);
+  var meta = document.getElementById('meta-' + sec);
+  if (bar) { bar.style.width = pct + '%'; if (done === total) bar.classList.add('complete'); else bar.classList.remove('complete'); }
+  if (lbl) lbl.textContent = done + ' of ' + total + ' complete';
+  if (meta) {
+    if (done === total) { meta.textContent = 'All done ✓'; meta.style.color = '#16a34a'; }
+    else { meta.textContent = total + (sec === 'qs' ? ' sessions' : ' tasks'); meta.style.color = ''; }
+  }
+}
+function updateOverall() {
+  var fixedDone = 0;
+  Object.keys(TOTALS).forEach(function(sec) { fixedDone += STATE[sec].length; });
+  var customDone = STATE.custom.filter(function(t) { return t.d; }).length;
+  var customTotal = STATE.custom.length;
+  var totalDone = fixedDone + customDone;
+  var totalAll = TOTAL_FIXED + customTotal;
+  var pct = totalAll > 0 ? Math.round(totalDone / totalAll * 100) : 0;
+  var fill = document.getElementById('overall-fill');
+  var label = document.getElementById('overall-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+}
+
+/* ── Custom tasks ── */
+function renderCustomTasks() {
+  var list = document.getElementById('custom-list');
+  list.innerHTML = '';
+  if (STATE.custom.length === 0) {
+    list.innerHTML = '<div class="empty-custom"><span>✓</span>Your custom tasks will appear here</div>';
+    document.getElementById('custom-subtitle').textContent = 'Add your own to-dos for this onboarding';
+    return;
+  }
+  var done = STATE.custom.filter(function(t) { return t.d; }).length;
+  document.getElementById('custom-subtitle').textContent = done + ' of ' + STATE.custom.length + ' complete';
+  STATE.custom.forEach(function(task, idx) {
+    var row = document.createElement('div');
+    row.className = 'custom-task';
+    var cb = document.createElement('div');
+    cb.className = 'cb' + (task.d ? ' on' : '');
+    cb.onclick = (function(i) { return function() { tickCustom(i); }; })(idx);
+    var name = document.createElement('div');
+    name.className = 'custom-task-name' + (task.d ? ' done' : '');
+    name.textContent = task.t;
+    var del = document.createElement('button');
+    del.className = 'delete-btn';
+    del.title = 'Remove task';
+    del.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    del.onclick = (function(i) { return function(e) { e.stopPropagation(); deleteCustomTask(i); }; })(idx);
+    row.appendChild(cb);
+    row.appendChild(name);
+    row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+function tickCustom(idx) {
+  STATE.custom[idx].d = !STATE.custom[idx].d;
+  renderCustomTasks();
+  updateOverall();
+  saveState();
+}
+function deleteCustomTask(idx) {
+  STATE.custom.splice(idx, 1);
+  renderCustomTasks();
+  updateOverall();
+  saveState();
+}
+function addCustomTask() {
+  var input = document.getElementById('new-task-input');
+  var text = input.value.trim();
+  if (!text) return;
+  STATE.custom.push({ t: text, d: false });
+  input.value = '';
+  renderCustomTasks();
+  updateOverall();
+  saveState();
+}
+function handleAddKey(e) {
+  if (e.key === 'Enter') addCustomTask();
+}
+
+/* ── UI helpers ── */
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+function copyTemplate() {
+  navigator.clipboard.writeText(EMAIL_TEMPLATE).then(function() {
+    flashCopyBtn('copy-btn', 'Copied!');
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = EMAIL_TEMPLATE; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    flashCopyBtn('copy-btn', 'Copied!');
+  });
+}
+
+function flashCopyBtn(id, msg) {
+  var btn = document.getElementById(id);
+  var orig = btn.textContent;
+  btn.textContent = msg; btn.classList.add('copied');
+  setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+}
+
+loadState();
+</script>
+</body>
+</html>
