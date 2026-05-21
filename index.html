@@ -21,26 +21,23 @@ body {
 
 /* ── Header ── */
 .header {
-  background: linear-gradient(135deg, #1050a8 0%, #1566C0 55%, #1d7fd4 100%);
+  background: #116FEA;
   border-radius: 16px;
-  padding: 28px 32px;
+  padding: 16px 24px;
   margin-bottom: 24px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  box-shadow: 0 4px 24px rgba(21,102,192,0.25);
+  box-shadow: 0 4px 24px rgba(17,111,234,0.25);
 }
-.header-left h1 { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
-.header-left p { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 4px; }
-.header-logo-wrap {
-  background: #fff;
-  border-radius: 10px;
-  padding: 7px 12px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.header-logo img { height: 36px; width: auto; display: block; }
+.header-help {
+  display: flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 500;
+  text-decoration: none; transition: color 0.12s;
 }
-.header-logo-wrap img { height: 40px; width: auto; display: block; }
+.header-help:hover { color: #fff; }
+.header-help svg { flex-shrink: 0; }
 
 /* ── Meetings ── */
 .meetings-card {
@@ -219,13 +216,13 @@ body {
 <div class="container">
 
   <div class="header">
-    <div class="header-left">
-      <h1>Onboarding Checklist</h1>
-      <p>Complete these before your 2-week check-in &amp; go-live</p>
+    <div class="header-logo">
+      <img src="Logo - White.png" alt="Floorzap">
     </div>
-    <div class="header-logo-wrap">
-      <img src="fz-logo-630x420.png" alt="Floorzap">
-    </div>
+    <a class="header-help" href="https://help.floorzap.com" target="_blank">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 11.5v-.5a2 2 0 0 1 1.06-1.77l.13-.07A2 2 0 0 0 8 5.5a2 2 0 0 0-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.5" r=".75" fill="currentColor"/></svg>
+      Help center
+    </a>
   </div>
 
   <!-- Meetings -->
