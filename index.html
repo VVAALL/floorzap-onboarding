@@ -340,20 +340,71 @@ body {
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-blue timing-pill">Before 2-week</span>
         <span class="pill pill-green done-badge" id="badge-sys">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
     <div class="card-body">
       <div class="task"><div class="cb" id="cb-sys-0" onclick="tick('sys',0)"></div><div class="task-body"><div class="task-name" id="tn-sys-0">Locations</div><div class="task-desc">Add all store locations where your business operates</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-set-up-a-location-" target="_blank">How-to guide ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-sys-1" onclick="tick('sys',1)"></div><div class="task-body"><div class="task-name" id="tn-sys-1">Employees &amp; users</div><div class="task-desc">Add all team members — check "Send Email Confirmation" so they can set their own password and log in</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-to-add-a-new-employee-user" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-sys-1" onclick="tick('sys',1)"></div><div class="task-body"><div class="task-name" id="tn-sys-1">Employees &amp; users</div><div class="task-desc">Add all team members — check "Send Email Confirmation" so they can set their own password and log in. <strong>⚠️ Avoid using the ! symbol in passwords — it may cause login issues.</strong></div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-to-add-a-new-employee-user" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-2" onclick="tick('sys',2)"></div><div class="task-body"><div class="task-name" id="tn-sys-2">Contractors &amp; subs</div><div class="task-desc">Start with the "Installer TBD" placeholder your specialist set up, then add your real contractors</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/how-do-i-add-a-contractor-or-sub-contractor" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-3" onclick="tick('sys',3)"></div><div class="task-body"><div class="task-name" id="tn-sys-3">Bank &amp; credit accounts</div><div class="task-desc">Add all accounts — if using QuickBooks Online, names here must match QBO exactly</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/adding-your-bank/credit-accounts" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-4" onclick="tick('sys',4)"></div><div class="task-body"><div class="task-name" id="tn-sys-4">Commission settings</div><div class="task-desc">Edit or delete the defaults to match your commission structure</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/where-do-i-edit-or-add-commission-settings" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-5" onclick="tick('sys',5)"></div><div class="task-body"><div class="task-name" id="tn-sys-5">Warehouses</div><div class="task-desc">Any location you send an installer to pick up materials — onsite, offsite, will call, third party</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/what-is-the-warehouse-section-for" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-6" onclick="tick('sys',6)"></div><div class="task-body"><div class="task-name" id="tn-sys-6">Completion checklist</div><div class="task-desc">Personalize the default template — add, edit, or remove questions for your workflow</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/completion-checklist" target="_blank">How-to guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-sys-7" onclick="tick('sys',7)"></div><div class="task-body"><div class="task-name" id="tn-sys-7">Contract templates</div><div class="task-desc">Edit the defaults or replace with your own contract language</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/contract-templates" target="_blank">How-to guide ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- Quick Start Training -->
+  <div class="card collapsed" id="c-qs">
+    <div class="card-header" onclick="toggleCard('c-qs')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#eff6ff;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="1.5" stroke="#1d4ed8" stroke-width="1.5"/><path d="M6 11v2M10 11v2M4 13h8" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 6.5L9.5 8 6.5 9.5V6.5z" fill="#1d4ed8"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Quick start training</div>
+          <div class="card-meta" id="meta-qs">4 sessions</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-green done-badge" id="badge-qs">✓ Complete</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="note">90-minute trainer-led sessions — same content runs every week. Attend each at least once and bring the right team members. Recordings are available if someone misses a session.</div>
+      <div class="task"><div class="cb" id="cb-qs-0" onclick="tick('qs',0)"></div><div class="task-body"><div class="task-name" id="tn-qs-0">Session 1 — Leads, quotes &amp; invoices</div><div class="task-desc">Tuesdays 2:00 PM CT &nbsp;·&nbsp; Invite: sales team, office staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/Il3_-qj8SXKzQaYKPsq-NA#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-1-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-1" onclick="tick('qs',1)"></div><div class="task-body"><div class="task-name" id="tn-qs-1">Session 2 — Work orders &amp; scheduling</div><div class="task-desc">Wednesdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/zEhS94XVRRq5WhRCkjbqiQ#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-2-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-2" onclick="tick('qs',2)"></div><div class="task-body"><div class="task-name" id="tn-qs-2">Session 3 — Inventory &amp; payments</div><div class="task-desc">Thursdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/ErkXjsriQT-b_p0dOComRg#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-3-recording" target="_blank">Recording ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-qs-3" onclick="tick('qs',3)"></div><div class="task-body"><div class="task-name" id="tn-qs-3">Session 4 — Reports &amp; advanced settings</div><div class="task-desc">Fridays 2:00 PM CT &nbsp;·&nbsp; Invite: office staff, admins</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/qaTPf4BYRc66LB6a39OTmw#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-4-recording" target="_blank">Recording ↗</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- Data Migration -->
+  <div class="card collapsed" id="c-mig">
+    <div class="card-header" onclick="toggleCard('c-mig')">
+      <div class="card-left">
+        <div class="card-icon" style="background:#fffbeb;">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7.5h7M3 11h5" stroke="#b45309" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Data migration</div>
+          <div class="card-meta" id="meta-mig">4 tasks</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="pill pill-green done-badge" id="badge-mig">✓ Complete</span>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="note amber">Download each template below, fill it out, and send the completed file to your onboarding specialist. Start early — processing takes 2–3 weeks after files are received.</div>
+      <div class="task"><div class="cb" id="cb-mig-0" onclick="tick('mig',0)"></div><div class="task-body"><div class="task-name" id="tn-mig-0">Labor cost list</div><div class="task-desc">All labor items (install, tear down, etc.) — include cost, margin, and unit type (sqft, each, LF)</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1pc2tmMpyRHJrx4IQayYFZvCPlxohXe_k/edit?gid=695381032#gid=695381032" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/creating-a-labor-cost-list" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-1" onclick="tick('mig',1)"></div><div class="task-body"><div class="task-name" id="tn-mig-1">Customer list</div><div class="task-desc">First and last name, or company name required at minimum</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1GMRgjz3uDvu540VO-gCMNnL6lXE5KkFS/edit?gid=92032769#gid=92032769" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/how-do-i-create-a-customer-import-list" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-2" onclick="tick('mig',2)"></div><div class="task-body"><div class="task-name" id="tn-mig-2">Vendor list</div><div class="task-desc">Vendor name is required — include any additional contact details you have</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1rng2YFE8rh_vP07yLUIB0J-3u7fYdxww/edit?gid=1292759137#gid=1292759137" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/vendor-import-template" target="_blank">How-to guide ↗</a></div></div></div>
+      <div class="task"><div class="cb" id="cb-mig-3" onclick="tick('mig',3)"></div><div class="task-body"><div class="task-name" id="tn-mig-3">Non-B2B products</div><div class="task-desc">One template per vendor — your specialist reviews and confirms before import</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1STO6eijj02b1f7WRqqZjR6_FVDY7L7OE/edit?gid=1722535537#gid=1722535537" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/adding-non-b2b-vendors-non-b2b-material-import" target="_blank">How-to guide ↗</a></div></div></div>
     </div>
   </div>
 
@@ -370,7 +421,6 @@ body {
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-blue timing-pill">Before 2-week</span>
         <span class="pill pill-green done-badge" id="badge-b2b">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
@@ -404,60 +454,6 @@ Regards,</div>
       </div></div>
       <div class="task"><div class="cb" id="cb-b2b-2" onclick="tick('b2b',2)"></div><div class="task-body"><div class="task-name" id="tn-b2b-2">Enter credentials in Floorzap</div><div class="task-desc">Paste the username and password from the vendor's reply, enable B2B, and save</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/b2b-setup-guide" target="_blank">Setup guide ↗</a></div></div></div>
       <div class="task"><div class="cb" id="cb-b2b-3" onclick="tick('b2b',3)"></div><div class="task-body"><div class="task-name" id="tn-b2b-3">Import your B2B catalog</div><div class="task-desc">Once credentials are active, import your full product catalog into Floorzap</div><div class="task-links"><a class="task-link" href="https://help.floorzap.com/b2b-setup-guide" target="_blank">Setup guide ↗</a></div></div></div>
-    </div>
-  </div>
-
-  <!-- Data Migration -->
-  <div class="card collapsed" id="c-mig">
-    <div class="card-header" onclick="toggleCard('c-mig')">
-      <div class="card-left">
-        <div class="card-icon" style="background:#fffbeb;">
-          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7.5h7M3 11h5" stroke="#b45309" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
-        <div>
-          <div class="card-title">Data migration</div>
-          <div class="card-meta" id="meta-mig">4 tasks</div>
-        </div>
-      </div>
-      <div class="card-right">
-        <span class="pill pill-amber timing-pill">Allow 2–3 weeks</span>
-        <span class="pill pill-green done-badge" id="badge-mig">✓ Complete</span>
-        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="note amber">Download each template below, fill it out, and send the completed file to your onboarding specialist. Start early — processing takes 2–3 weeks after files are received.</div>
-      <div class="task"><div class="cb" id="cb-mig-0" onclick="tick('mig',0)"></div><div class="task-body"><div class="task-name" id="tn-mig-0">Labor cost list</div><div class="task-desc">All labor items (install, tear down, etc.) — include cost, margin, and unit type (sqft, each, LF)</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1pc2tmMpyRHJrx4IQayYFZvCPlxohXe_k/edit?gid=695381032#gid=695381032" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/creating-a-labor-cost-list" target="_blank">How-to guide ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-mig-1" onclick="tick('mig',1)"></div><div class="task-body"><div class="task-name" id="tn-mig-1">Customer list</div><div class="task-desc">First and last name, or company name required at minimum</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1GMRgjz3uDvu540VO-gCMNnL6lXE5KkFS/edit?gid=92032769#gid=92032769" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/how-do-i-create-a-customer-import-list" target="_blank">How-to guide ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-mig-2" onclick="tick('mig',2)"></div><div class="task-body"><div class="task-name" id="tn-mig-2">Vendor list</div><div class="task-desc">Vendor name is required — include any additional contact details you have</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1rng2YFE8rh_vP07yLUIB0J-3u7fYdxww/edit?gid=1292759137#gid=1292759137" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/vendor-import-template" target="_blank">How-to guide ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-mig-3" onclick="tick('mig',3)"></div><div class="task-body"><div class="task-name" id="tn-mig-3">Non-B2B products</div><div class="task-desc">One template per vendor — your specialist reviews and confirms before import</div><div class="task-links"><a class="task-link" href="https://docs.google.com/spreadsheets/d/1STO6eijj02b1f7WRqqZjR6_FVDY7L7OE/edit?gid=1722535537#gid=1722535537" target="_blank">Template ↗</a><a class="task-link" href="https://help.floorzap.com/adding-non-b2b-vendors-non-b2b-material-import" target="_blank">How-to guide ↗</a></div></div></div>
-    </div>
-  </div>
-
-  <!-- Quick Start Training -->
-  <div class="card collapsed" id="c-qs">
-    <div class="card-header" onclick="toggleCard('c-qs')">
-      <div class="card-left">
-        <div class="card-icon" style="background:#eff6ff;">
-          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" rx="1.5" stroke="#1d4ed8" stroke-width="1.5"/><path d="M6 11v2M10 11v2M4 13h8" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 6.5L9.5 8 6.5 9.5V6.5z" fill="#1d4ed8"/></svg>
-        </div>
-        <div>
-          <div class="card-title">Quick start training</div>
-          <div class="card-meta" id="meta-qs">4 sessions</div>
-        </div>
-      </div>
-      <div class="card-right">
-        <span class="pill pill-blue timing-pill">Before 2-week</span>
-        <span class="pill pill-green done-badge" id="badge-qs">✓ Complete</span>
-        <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="note">90-minute trainer-led sessions — same content runs every week. Attend each at least once and bring the right team members. Recordings are available if someone misses a session.</div>
-      <div class="task"><div class="cb" id="cb-qs-0" onclick="tick('qs',0)"></div><div class="task-body"><div class="task-name" id="tn-qs-0">Session 1 — Leads, quotes &amp; invoices</div><div class="task-desc">Tuesdays 2:00 PM CT &nbsp;·&nbsp; Invite: sales team, office staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/Il3_-qj8SXKzQaYKPsq-NA#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-1-recording" target="_blank">Recording ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-qs-1" onclick="tick('qs',1)"></div><div class="task-body"><div class="task-name" id="tn-qs-1">Session 2 — Work orders &amp; scheduling</div><div class="task-desc">Wednesdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/zEhS94XVRRq5WhRCkjbqiQ#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-session-2-recording" target="_blank">Recording ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-qs-2" onclick="tick('qs',2)"></div><div class="task-body"><div class="task-name" id="tn-qs-2">Session 3 — Inventory &amp; payments</div><div class="task-desc">Thursdays 2:00 PM CT &nbsp;·&nbsp; Invite: order clerks, warehouse staff</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/ErkXjsriQT-b_p0dOComRg#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-3-recording" target="_blank">Recording ↗</a></div></div></div>
-      <div class="task"><div class="cb" id="cb-qs-3" onclick="tick('qs',3)"></div><div class="task-body"><div class="task-name" id="tn-qs-3">Session 4 — Reports &amp; advanced settings</div><div class="task-desc">Fridays 2:00 PM CT &nbsp;·&nbsp; Invite: office staff, admins</div><div class="task-links"><a class="task-link" href="https://zoom.us/meeting/register/qaTPf4BYRc66LB6a39OTmw#/registration" target="_blank">Register ↗</a><a class="task-link" href="https://help.floorzap.com/new-user-training-4-recording" target="_blank">Recording ↗</a></div></div></div>
     </div>
   </div>
 

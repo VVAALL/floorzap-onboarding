@@ -69,49 +69,73 @@ body {
 }
 .add-client-btn:hover { background: rgba(255,255,255,0.28); }
 
-/* ── Main ── */
-.container { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
-.toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px;
-}
-.toolbar h2 { font-size: 16px; font-weight: 700; color: #111827; }
-.client-count { font-size: 13px; color: #9ca3af; font-weight: 500; margin-left: 8px; }
+/* ── App shell: sidebar + main ── */
+.app-shell { display: flex; min-height: calc(100vh - 65px); }
 
-/* ── Client grid (used inside each onboarder section) ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: #fff; border-right: 1px solid #e5e7eb;
+  padding: 16px 10px 40px; position: sticky; top: 65px;
+  height: calc(100vh - 65px); overflow-y: auto;
+}
+
+.main-content { flex: 1; padding: 28px 28px 80px; min-width: 0; }
+
+/* ── Sidebar nav ── */
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 13.5px; font-weight: 500; color: #374151;
+  transition: background 0.12s, color 0.12s; user-select: none;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: #f3f4f6; }
+.nav-item.active { background: #eff6ff; color: #116FEA; font-weight: 600; }
+.nav-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.nav-count {
+  margin-left: auto; font-size: 11px; font-weight: 600;
+  background: #f3f4f6; color: #9ca3af; border-radius: 20px; padding: 2px 7px;
+  min-width: 20px; text-align: center;
+}
+.nav-item.active .nav-count { background: #dbeafe; color: #116FEA; }
+.nav-divider { height: 1px; background: #e5e7eb; margin: 10px 2px; }
+.nav-label {
+  font-size: 11px; font-weight: 600; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 0 10px; margin: 8px 0 4px;
+}
+.nav-icon { flex-shrink: 0; color: currentColor; opacity: 0.7; }
+
+/* ── Main content header + search ── */
+.main-header { margin-bottom: 18px; }
+.main-title { font-size: 18px; font-weight: 700; color: #111827; letter-spacing: -0.3px; }
+.main-subtitle { font-size: 13px; color: #9ca3af; margin-top: 3px; }
+
+.search-wrap { position: relative; margin-bottom: 20px; }
+.search-input {
+  width: 100%; font-size: 14px; font-family: inherit; color: #111827;
+  border: 1.5px solid #e5e7eb; border-radius: 10px;
+  padding: 10px 14px 10px 38px; outline: none; background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-input:focus { border-color: #116FEA; box-shadow: 0 0 0 3px rgba(17,111,234,0.1); }
+.search-input::placeholder { color: #9ca3af; }
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: #9ca3af; pointer-events: none;
+}
+
+/* ── Client grid ── */
 .client-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 10px;
 }
 
-/* ── Onboarder sections ── */
-.ob-section { margin-bottom: 10px; }
-.ob-header {
-  background: #fff; border-radius: 14px; padding: 16px 20px;
-  display: flex; align-items: center; gap: 14px; cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
-  transition: box-shadow 0.18s; user-select: none;
-}
-.ob-header:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.05); }
-.ob-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.ob-title { font-size: 14px; font-weight: 700; color: #111827; flex: 1; }
-.ob-badge {
-  background: #f3f4f6; color: #6b7280; font-size: 12px; font-weight: 600;
-  border-radius: 20px; padding: 3px 11px; white-space: nowrap;
-}
-.ob-chevron { color: #9ca3af; transition: transform 0.2s; flex-shrink: 0; }
-.ob-section.open .ob-chevron { transform: rotate(180deg); }
-.ob-body { display: none; padding: 10px 0 4px; }
-.ob-section.open .ob-body { display: block; }
-.ob-empty {
-  text-align: center; color: #9ca3af; font-size: 13px; padding: 20px 20px;
-  background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.04);
+/* ── Onboarder pill on cards (shown in Recent / search mode) ── */
+.onboarder-pill {
+  font-size: 11px; font-weight: 600; border-radius: 20px;
+  padding: 2px 8px; white-space: nowrap; flex-shrink: 0; margin-top: 1px;
 }
 
 /* ── Modal select ── */
@@ -244,12 +268,20 @@ body {
   100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
 }
 
-@media (max-width: 540px) {
-  .container { padding: 20px 12px 60px; }
+@media (max-width: 700px) {
+  .app-shell { flex-direction: column; }
+  .sidebar {
+    width: 100%; height: auto; position: static;
+    border-right: none; border-bottom: 1px solid #e5e7eb;
+    padding: 8px 8px 6px; display: flex; flex-direction: row;
+    overflow-x: auto; gap: 4px; white-space: nowrap;
+  }
+  .nav-divider, .nav-label { display: none; }
+  .nav-item { flex-shrink: 0; margin-bottom: 0; }
+  .main-content { padding: 16px 14px 60px; }
   .client-grid { grid-template-columns: 1fr; }
   .header { padding: 12px 16px; }
   .header-label { display: none; }
-  .ob-header { padding: 14px 16px; }
 }
 </style>
 </head>
@@ -282,14 +314,38 @@ body {
     </div>
   </div>
 
-  <div class="container">
-    <div class="toolbar">
-      <div>
-        <span style="font-size:16px;font-weight:700;color:#111827;">Active clients</span>
-        <span class="client-count" id="client-count"></span>
+  <div class="app-shell">
+    <!-- Left sidebar nav -->
+    <div class="sidebar">
+      <div class="nav-item active" id="nav-recent" onclick="setNav('recent')">
+        <svg class="nav-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 4.5V7l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Recent
+        <span class="nav-count" id="count-recent">—</span>
       </div>
+      <div class="nav-divider"></div>
+      <div class="nav-label">Onboarders</div>
+      <div id="nav-onboarders"></div>
     </div>
-    <div id="sections-container"></div>
+
+    <!-- Main content -->
+    <div class="main-content">
+      <div class="main-header">
+        <div class="main-title" id="main-title">Recent activity</div>
+        <div class="main-subtitle" id="main-subtitle"></div>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 10l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" id="search-input" type="text"
+               placeholder="Search clients by name…" oninput="renderMain()">
+      </div>
+      <div class="client-grid" id="main-grid"></div>
+    </div>
   </div>
 
 </div>
@@ -352,6 +408,7 @@ var DASHBOARD_PASSWORD = 'floorzap2026'; // Change this to your preferred passwo
 var _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var _clients = {}; // keyed by client id
 var _newClientUrl = '';
+var _activeNav = 'recent';
 var FIXED_TOTAL = 20;
 
 var ONBOARDERS = ['David', 'JB', 'Maddi', 'Valentin', 'Amber'];
@@ -400,7 +457,7 @@ async function loadClients() {
   if (res.data) {
     _clients = {};
     res.data.forEach(function(row) { _clients[row.id] = row; });
-    renderSections();
+    renderMain();
   }
 }
 
@@ -415,75 +472,102 @@ function subscribeRealtime() {
       } else {
         _clients[row.id] = row;
       }
-      renderSections();
+      renderMain();
     })
     .subscribe();
 }
 
-/* ── Render ── */
-function renderSections() {
-  var container = document.getElementById('sections-container');
-  var totalCount = Object.keys(_clients).length;
-  document.getElementById('client-count').textContent = totalCount ? '(' + totalCount + ')' : '';
+/* ── Nav ── */
+function setNav(name) {
+  _activeNav = name;
+  document.getElementById('search-input').value = '';
+  renderMain();
+}
 
-  // Preserve open/closed state
-  var openState = {};
-  ONBOARDERS.forEach(function(name) {
-    var existing = document.getElementById('section-' + name);
-    if (existing) {
-      openState[name] = existing.classList.contains('open');
-    } else {
-      openState[name] = sessionStorage.getItem('fz-dash-section-' + name) === 'open';
-    }
-  });
+function renderSidebar() {
+  // Recent item
+  var allIds = Object.keys(_clients);
+  var recentCount = Math.min(allIds.length, 10);
+  document.getElementById('count-recent').textContent = recentCount;
+  var recentEl = document.getElementById('nav-recent');
+  if (_activeNav === 'recent') recentEl.classList.add('active');
+  else recentEl.classList.remove('active');
 
+  // Onboarder items
+  var container = document.getElementById('nav-onboarders');
   container.innerHTML = '';
-
   ONBOARDERS.forEach(function(name) {
-    var clients = Object.values(_clients)
-      .filter(function(c) { return (c.onboarder || 'Unassigned') === name; })
-      .sort(function(a, b) { return new Date(b.updated_at) - new Date(a.updated_at); });
-
-    var isOpen = openState[name];
+    var count = Object.values(_clients).filter(function(c) {
+      return (c.onboarder || 'Unassigned') === name;
+    }).length;
     var color = ONBOARDER_COLORS[name] || '#116FEA';
-    var badge = clients.length === 1 ? '1 client' : clients.length + ' clients';
-
-    var section = document.createElement('div');
-    section.className = 'ob-section' + (isOpen ? ' open' : '');
-    section.id = 'section-' + name;
-
-    section.innerHTML =
-      '<div class="ob-header" onclick="toggleSection(\'' + escHtml(name) + '\')">'
-      + '<div class="ob-avatar" style="background:' + color + '"></div>'
-      + '<div class="ob-title">' + escHtml(name) + '</div>'
-      + '<div class="ob-badge">' + badge + '</div>'
-      + '<svg class="ob-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">'
-      + '<path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-      + '</svg>'
-      + '</div>'
-      + '<div class="ob-body">'
-      + (clients.length === 0
-          ? '<div class="ob-empty">No clients assigned yet</div>'
-          : '<div class="client-grid" id="grid-' + escHtml(name) + '"></div>')
-      + '</div>';
-
-    container.appendChild(section);
-
-    if (clients.length > 0) {
-      var grid = section.querySelector('.client-grid');
-      clients.forEach(function(row) { grid.appendChild(buildCard(row)); });
-    }
+    var isActive = _activeNav === name;
+    var item = document.createElement('div');
+    item.className = 'nav-item' + (isActive ? ' active' : '');
+    item.onclick = (function(n) { return function() { setNav(n); }; })(name);
+    item.innerHTML =
+      '<span class="nav-dot" style="background:' + color + '"></span>'
+      + escHtml(name)
+      + '<span class="nav-count">' + count + '</span>';
+    container.appendChild(item);
   });
 }
 
-function toggleSection(name) {
-  var section = document.getElementById('section-' + name);
-  if (!section) return;
-  var isOpen = section.classList.toggle('open');
-  sessionStorage.setItem('fz-dash-section-' + name, isOpen ? 'open' : 'closed');
+/* ── Render ── */
+function renderMain() {
+  var query = document.getElementById('search-input').value.trim().toLowerCase();
+  var allIds = Object.keys(_clients).sort(function(a, b) {
+    return new Date(_clients[b].updated_at) - new Date(_clients[a].updated_at);
+  });
+
+  var ids, showOnboarder;
+  var titleEl = document.getElementById('main-title');
+  var subEl   = document.getElementById('main-subtitle');
+
+  if (query) {
+    ids = allIds.filter(function(id) {
+      return _clients[id].name.toLowerCase().indexOf(query) !== -1;
+    });
+    titleEl.textContent = ids.length + ' result' + (ids.length !== 1 ? 's' : '') + ' for "' + query + '"';
+    subEl.textContent = '';
+    showOnboarder = true;
+  } else if (_activeNav === 'recent') {
+    ids = allIds.slice(0, 10);
+    titleEl.textContent = 'Recent activity';
+    subEl.textContent = ids.length ? 'Showing the ' + ids.length + ' most recently updated' : '';
+    showOnboarder = true;
+  } else {
+    ids = allIds.filter(function(id) {
+      return (_clients[id].onboarder || 'Unassigned') === _activeNav;
+    });
+    titleEl.textContent = _activeNav + '’s clients';
+    subEl.textContent = ids.length + ' client' + (ids.length !== 1 ? 's' : '');
+    showOnboarder = false;
+  }
+
+  renderCardGrid(ids, showOnboarder);
+  renderSidebar();
 }
 
-function buildCard(row) {
+function renderCardGrid(ids, showOnboarder) {
+  var grid = document.getElementById('main-grid');
+  var noClients = Object.keys(_clients).length === 0;
+  if (ids.length === 0) {
+    grid.innerHTML = '<div class="empty-state">'
+      + '<svg width="48" height="48" viewBox="0 0 48 48" fill="none">'
+      + '<rect x="8" y="10" width="32" height="30" rx="4" stroke="#9ca3af" stroke-width="2.5"/>'
+      + '<path d="M16 20h16M16 27h10" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"/>'
+      + '</svg>'
+      + '<strong>' + (noClients ? 'No clients yet' : 'No clients here') + '</strong>'
+      + '<p>' + (noClients ? 'Click “+ Add client” to create your first onboarding link.' : 'Try selecting a different onboarder or searching by name.') + '</p>'
+      + '</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  ids.forEach(function(id) { grid.appendChild(buildCard(_clients[id], showOnboarder)); });
+}
+
+function buildCard(row, showOnboarder) {
   var state = row.state || {};
   var done = (state.sys   ? state.sys.length   : 0)
            + (state.b2b   ? state.b2b.length   : 0)
@@ -491,8 +575,13 @@ function buildCard(row) {
            + (state.qs    ? state.qs.length    : 0);
   var pct = Math.round(done / FIXED_TOTAL * 100);
   var complete = done === FIXED_TOTAL;
-
   var clientUrl = buildClientUrl(row.id);
+
+  var obPill = '';
+  if (showOnboarder && row.onboarder && row.onboarder !== 'Unassigned') {
+    var obColor = ONBOARDER_COLORS[row.onboarder] || '#6b7280';
+    obPill = '<span class="onboarder-pill" style="background:' + obColor + '18;color:' + obColor + '">' + escHtml(row.onboarder) + '</span>';
+  }
 
   var card = document.createElement('div');
   card.className = 'client-card';
@@ -500,7 +589,10 @@ function buildCard(row) {
   card.innerHTML =
     '<div class="card-top">'
     +   '<div class="client-name">' + escHtml(row.name) + '</div>'
-    +   '<div class="last-active">' + relativeTime(row.updated_at) + '</div>'
+    +   '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
+    +     obPill
+    +     '<div class="last-active">' + relativeTime(row.updated_at) + '</div>'
+    +   '</div>'
     + '</div>'
     + '<div class="prog-track"><div class="prog-fill' + (complete ? ' complete' : '') + '" style="width:' + pct + '%"></div></div>'
     + '<div class="task-count' + (complete ? ' complete' : '') + '">'
@@ -549,7 +641,8 @@ async function submitClient() {
 
   _newClientUrl = buildClientUrl(id);
   _clients[id] = res.data;
-  renderSections();
+  _activeNav = 'recent';
+  renderMain();
 
   document.getElementById('success-name').textContent = name;
   document.getElementById('success-url').textContent = _newClientUrl;
@@ -632,7 +725,7 @@ async function confirmDelete() {
   if (res.error) { alert('Error: ' + res.error.message); return; }
 
   delete _clients[_deleteTargetId];
-  renderSections();
+  renderMain();
   closeDeleteModal();
 }
 
