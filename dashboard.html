@@ -78,12 +78,53 @@ body {
 .toolbar h2 { font-size: 16px; font-weight: 700; color: #111827; }
 .client-count { font-size: 13px; color: #9ca3af; font-weight: 500; margin-left: 8px; }
 
-/* ── Client grid ── */
+/* ── Client grid (used inside each onboarder section) ── */
 .client-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
 }
+
+/* ── Onboarder sections ── */
+.ob-section { margin-bottom: 10px; }
+.ob-header {
+  background: #fff; border-radius: 14px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: box-shadow 0.18s; user-select: none;
+}
+.ob-header:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.05); }
+.ob-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ob-title { font-size: 14px; font-weight: 700; color: #111827; flex: 1; }
+.ob-badge {
+  background: #f3f4f6; color: #6b7280; font-size: 12px; font-weight: 600;
+  border-radius: 20px; padding: 3px 11px; white-space: nowrap;
+}
+.ob-chevron { color: #9ca3af; transition: transform 0.2s; flex-shrink: 0; }
+.ob-section.open .ob-chevron { transform: rotate(180deg); }
+.ob-body { display: none; padding: 10px 0 4px; }
+.ob-section.open .ob-body { display: block; }
+.ob-empty {
+  text-align: center; color: #9ca3af; font-size: 13px; padding: 20px 20px;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+/* ── Modal select ── */
+.modal-select {
+  width: 100%; font-size: 14px; font-family: inherit; color: #111827;
+  border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 36px 10px 14px;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 16px; background: #fafafa;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; cursor: pointer;
+}
+.modal-select:focus { border-color: #116FEA; box-shadow: 0 0 0 3px rgba(17,111,234,0.1); background-color: #fff; }
 
 /* ── Client card ── */
 .client-card {
@@ -208,6 +249,7 @@ body {
   .client-grid { grid-template-columns: 1fr; }
   .header { padding: 12px 16px; }
   .header-label { display: none; }
+  .ob-header { padding: 14px 16px; }
 }
 </style>
 </head>
@@ -247,16 +289,7 @@ body {
         <span class="client-count" id="client-count"></span>
       </div>
     </div>
-    <div class="client-grid" id="client-grid">
-      <div class="empty-state">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <rect x="8" y="10" width="32" height="30" rx="4" stroke="#9ca3af" stroke-width="2.5"/>
-          <path d="M16 20h16M16 27h10" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        <strong>No clients yet</strong>
-        <p>Click "+ Add client" to create your first onboarding link.</p>
-      </div>
-    </div>
+    <div id="sections-container"></div>
   </div>
 
 </div>
@@ -267,9 +300,17 @@ body {
 
     <div class="modal-form" id="modal-form">
       <h3>Add new client</h3>
-      <p>Enter the company name — we'll generate a unique onboarding link for them.</p>
+      <p>Enter the company name and assign an onboarding specialist.</p>
       <input class="modal-input" id="company-input" type="text"
              placeholder="Company name" maxlength="80" onkeydown="modalKey(event)">
+      <select class="modal-select" id="onboarder-select">
+        <option value="">Assign to onboarder…</option>
+        <option value="David">David</option>
+        <option value="JB">JB</option>
+        <option value="Madi">Madi</option>
+        <option value="Valentin">Valentin</option>
+        <option value="Amber">Amber</option>
+      </select>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
         <button class="btn-submit" id="submit-btn" onclick="submitClient()">Create link</button>
@@ -313,6 +354,15 @@ var _clients = {}; // keyed by client id
 var _newClientUrl = '';
 var FIXED_TOTAL = 20;
 
+var ONBOARDERS = ['David', 'JB', 'Madi', 'Valentin', 'Amber'];
+var ONBOARDER_COLORS = {
+  'David':    '#116FEA',
+  'JB':       '#7c3aed',
+  'Madi':     '#db2777',
+  'Valentin': '#059669',
+  'Amber':    '#d97706'
+};
+
 /* ── Password gate ── */
 function gateKey(e) { if (e.key === 'Enter') gateSubmit(); }
 function gateSubmit() {
@@ -350,7 +400,7 @@ async function loadClients() {
   if (res.data) {
     _clients = {};
     res.data.forEach(function(row) { _clients[row.id] = row; });
-    renderGrid();
+    renderSections();
   }
 }
 
@@ -365,34 +415,73 @@ function subscribeRealtime() {
       } else {
         _clients[row.id] = row;
       }
-      renderGrid();
+      renderSections();
     })
     .subscribe();
 }
 
 /* ── Render ── */
-function renderGrid() {
-  var grid = document.getElementById('client-grid');
-  var ids = Object.keys(_clients).sort(function(a, b) {
-    return new Date(_clients[b].updated_at) - new Date(_clients[a].updated_at);
-  });
-  var count = document.getElementById('client-count');
-  count.textContent = ids.length ? '(' + ids.length + ')' : '';
+function renderSections() {
+  var container = document.getElementById('sections-container');
+  var totalCount = Object.keys(_clients).length;
+  document.getElementById('client-count').textContent = totalCount ? '(' + totalCount + ')' : '';
 
-  if (ids.length === 0) {
-    grid.innerHTML = '<div class="empty-state">'
-      + '<svg width="48" height="48" viewBox="0 0 48 48" fill="none">'
-      + '<rect x="8" y="10" width="32" height="30" rx="4" stroke="#9ca3af" stroke-width="2.5"/>'
-      + '<path d="M16 20h16M16 27h10" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"/>'
-      + '</svg><strong>No clients yet</strong>'
-      + '<p>Click "+ Add client" to create your first onboarding link.</p></div>';
-    return;
-  }
-
-  grid.innerHTML = '';
-  ids.forEach(function(id) {
-    grid.appendChild(buildCard(_clients[id]));
+  // Preserve open/closed state
+  var openState = {};
+  ONBOARDERS.forEach(function(name) {
+    var existing = document.getElementById('section-' + name);
+    if (existing) {
+      openState[name] = existing.classList.contains('open');
+    } else {
+      openState[name] = sessionStorage.getItem('fz-dash-section-' + name) !== 'closed';
+    }
   });
+
+  container.innerHTML = '';
+
+  ONBOARDERS.forEach(function(name) {
+    var clients = Object.values(_clients)
+      .filter(function(c) { return (c.onboarder || 'Unassigned') === name; })
+      .sort(function(a, b) { return new Date(b.updated_at) - new Date(a.updated_at); });
+
+    var isOpen = openState[name];
+    var color = ONBOARDER_COLORS[name] || '#116FEA';
+    var initials = name.length >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+    var badge = clients.length === 1 ? '1 client' : clients.length + ' clients';
+
+    var section = document.createElement('div');
+    section.className = 'ob-section' + (isOpen ? ' open' : '');
+    section.id = 'section-' + name;
+
+    section.innerHTML =
+      '<div class="ob-header" onclick="toggleSection(\'' + escHtml(name) + '\')">'
+      + '<div class="ob-avatar" style="background:' + color + '">' + escHtml(initials) + '</div>'
+      + '<div class="ob-title">' + escHtml(name) + '</div>'
+      + '<div class="ob-badge">' + badge + '</div>'
+      + '<svg class="ob-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">'
+      + '<path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+      + '</svg>'
+      + '</div>'
+      + '<div class="ob-body">'
+      + (clients.length === 0
+          ? '<div class="ob-empty">No clients assigned yet</div>'
+          : '<div class="client-grid" id="grid-' + escHtml(name) + '"></div>')
+      + '</div>';
+
+    container.appendChild(section);
+
+    if (clients.length > 0) {
+      var grid = section.querySelector('.client-grid');
+      clients.forEach(function(row) { grid.appendChild(buildCard(row)); });
+    }
+  });
+}
+
+function toggleSection(name) {
+  var section = document.getElementById('section-' + name);
+  if (!section) return;
+  var isOpen = section.classList.toggle('open');
+  sessionStorage.setItem('fz-dash-section-' + name, isOpen ? 'open' : 'closed');
 }
 
 function buildCard(row) {
@@ -426,18 +515,12 @@ function buildCard(row) {
   return card;
 }
 
-function updateCard(row) {
-  var existing = document.getElementById('card-' + row.id);
-  if (!existing) { renderGrid(); return; }
-  var fresh = buildCard(row);
-  existing.replaceWith(fresh);
-}
-
 /* ── Add client ── */
 function openModal() {
   document.getElementById('modal-form').classList.remove('hide');
   document.getElementById('modal-success').classList.remove('show');
   document.getElementById('company-input').value = '';
+  document.getElementById('onboarder-select').value = '';
   document.getElementById('modal-backdrop').classList.add('open');
   setTimeout(function() { document.getElementById('company-input').focus(); }, 50);
 }
@@ -450,13 +533,15 @@ function modalKey(e) { if (e.key === 'Enter') submitClient(); }
 
 async function submitClient() {
   var name = document.getElementById('company-input').value.trim();
-  if (!name) return;
+  var onboarder = document.getElementById('onboarder-select').value;
+  if (!name) { document.getElementById('company-input').focus(); return; }
+  if (!onboarder) { document.getElementById('onboarder-select').focus(); return; }
   var btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Creating…';
 
   var id = slugify(name) + '-' + randomSuffix();
   var res = await _sb.from('clients').insert({
-    id: id, name: name,
+    id: id, name: name, onboarder: onboarder,
     state: { sys: [], b2b: [], mig: [], qs: [], custom: [] }
   }).select().single();
 
@@ -465,7 +550,7 @@ async function submitClient() {
 
   _newClientUrl = buildClientUrl(id);
   _clients[id] = res.data;
-  renderGrid();
+  renderSections();
 
   document.getElementById('success-name').textContent = name;
   document.getElementById('success-url').textContent = _newClientUrl;
@@ -548,7 +633,7 @@ async function confirmDelete() {
   if (res.error) { alert('Error: ' + res.error.message); return; }
 
   delete _clients[_deleteTargetId];
-  renderGrid();
+  renderSections();
   closeDeleteModal();
 }
 

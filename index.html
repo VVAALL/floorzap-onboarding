@@ -231,6 +231,34 @@ body {
 /* ── Done badge ── */
 .done-badge { display: none; }
 
+/* ── Client greeting ── */
+.client-greeting-wrap {
+  margin-bottom: 10px; padding: 0 2px;
+}
+.client-greeting {
+  font-size: 21px; font-weight: 700; color: #111827; letter-spacing: -0.4px; line-height: 1.3;
+}
+
+/* ── Overall progress bar ── */
+.overall-progress {
+  background: #fff; border-radius: 14px; padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+  margin-bottom: 10px;
+}
+.op-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.op-title { font-size: 13px; font-weight: 600; color: #374151; }
+.op-text { font-size: 13px; color: #6b7280; font-weight: 500; }
+.op-text.complete { color: #16a34a; font-weight: 600; }
+.op-track { height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
+.op-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  background: linear-gradient(90deg, #116FEA, #3b8ef5);
+}
+.op-fill.complete { background: linear-gradient(90deg, #16a34a, #22c55e); }
+
 /* ── Mobile ── */
 @media (max-width: 540px) {
   body { padding: 12px 10px 60px; }
@@ -269,6 +297,20 @@ body {
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 11.5v-.5a2 2 0 0 1 1.06-1.77l.13-.07A2 2 0 0 0 8 5.5a2 2 0 0 0-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.5" r=".75" fill="currentColor"/></svg>
       <span>Help center</span>
     </a>
+  </div>
+
+  <!-- Client greeting (shown only when ?c= param is present) -->
+  <div class="client-greeting-wrap" id="client-greeting" style="display:none">
+    <div class="client-greeting">Hello, <span id="greeting-name"></span> 👋</div>
+  </div>
+
+  <!-- Overall progress bar (shown only when ?c= param is present) -->
+  <div class="overall-progress" id="overall-progress" style="display:none">
+    <div class="op-header">
+      <span class="op-title">Onboarding progress</span>
+      <span class="op-text" id="op-text">0 of 20 tasks complete</span>
+    </div>
+    <div class="op-track"><div class="op-fill" id="op-fill" style="width:0%"></div></div>
   </div>
 
   <!-- Meetings -->
@@ -480,6 +522,7 @@ try { _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e)
 
 var TOTALS = { sys: 8, b2b: 4, mig: 4, qs: 4 };
 var STATE = { sys: [], b2b: [], mig: [], qs: [], custom: [] };
+var CLIENT_NAME = null;
 
 var EMAIL_TEMPLATE = "Hello,\nCan you please respond with our B2B credentials?\n\nPlease reset our password if we currently have credentials set up and send a new, full catalog.\n\nCompany Name:\nCompany Phone:\nCompany Contact Name:\nCompany Contact Phone:\nCompany Contact Email:\nAccount #:\nSoftware Provider: Floorzap\nB2B File Version: 832\n\nRegards,";
 
@@ -573,18 +616,56 @@ async function loadState() {
   // Step 2: Supabase (async — overrides localStorage with authoritative state)
   if (CLIENT_ID && _sb) {
     try {
-      var res = await _sb.from('clients').select('state').eq('id', CLIENT_ID).maybeSingle();
-      if (res.data && res.data.state) {
-        var s = res.data.state;
-        STATE.sys    = Array.isArray(s.sys)    ? s.sys    : [];
-        STATE.b2b    = Array.isArray(s.b2b)    ? s.b2b    : [];
-        STATE.mig    = Array.isArray(s.mig)    ? s.mig    : [];
-        STATE.qs     = Array.isArray(s.qs)     ? s.qs     : [];
-        STATE.custom = Array.isArray(s.custom) ? s.custom : [];
-        applyState();
-        try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
+      var res = await _sb.from('clients').select('state, name').eq('id', CLIENT_ID).maybeSingle();
+      if (res.data) {
+        if (res.data.state) {
+          var s = res.data.state;
+          STATE.sys    = Array.isArray(s.sys)    ? s.sys    : [];
+          STATE.b2b    = Array.isArray(s.b2b)    ? s.b2b    : [];
+          STATE.mig    = Array.isArray(s.mig)    ? s.mig    : [];
+          STATE.qs     = Array.isArray(s.qs)     ? s.qs     : [];
+          STATE.custom = Array.isArray(s.custom) ? s.custom : [];
+          applyState();
+          try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
+        }
+        if (res.data.name) {
+          CLIENT_NAME = res.data.name;
+          applyClientName();
+        }
       }
     } catch(e) {}
+  }
+}
+
+/* ── Client name + progress ── */
+function applyClientName() {
+  if (!CLIENT_NAME || !CLIENT_ID) return;
+  var wrap = document.getElementById('client-greeting');
+  var nameEl = document.getElementById('greeting-name');
+  var prog = document.getElementById('overall-progress');
+  if (nameEl) nameEl.textContent = CLIENT_NAME;
+  if (wrap) wrap.style.display = '';
+  if (prog) prog.style.display = '';
+  updateOverallProgress();
+}
+
+function updateOverallProgress() {
+  if (!CLIENT_ID) return;
+  var done = STATE.sys.length + STATE.b2b.length + STATE.mig.length + STATE.qs.length;
+  var total = TOTALS.sys + TOTALS.b2b + TOTALS.mig + TOTALS.qs; // 20
+  var pct = Math.round(done / total * 100);
+  var complete = done === total;
+  var fill = document.getElementById('op-fill');
+  var text = document.getElementById('op-text');
+  if (fill) {
+    fill.style.width = pct + '%';
+    if (complete) fill.classList.add('complete');
+    else fill.classList.remove('complete');
+  }
+  if (text) {
+    text.textContent = complete ? '✓ All tasks complete!' : done + ' of ' + total + ' tasks complete';
+    if (complete) text.classList.add('complete');
+    else text.classList.remove('complete');
   }
 }
 
@@ -609,6 +690,7 @@ function updateSection(sec) {
     meta.style.color = complete ? '#16a34a' : '';
   }
   if (badge) badge.style.display = complete ? 'inline-block' : 'none';
+  updateOverallProgress();
 }
 
 /* ── Custom tasks ── */
