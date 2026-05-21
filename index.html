@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="icon" type="image/png" href="favicon-fz2.png">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -447,6 +448,13 @@ var MEETINGS = [
   // { name: "Go-Live Review",   date: "June 17, 2026", time: "10:00 AM CT", zoom: "" },
 ];
 
+/* ── Supabase config ── */
+var SUPABASE_URL = 'https://abszmmrjaxqpnjomfbxd.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFic3ptbXJqYXhxcG5qb21mYnhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNzUxMTYsImV4cCI6MjA5NDk1MTExNn0.5aPz4IHoINh1sgRixDwI4S5-KykJCuYMQOiONYVqkC4';
+var CLIENT_ID = new URLSearchParams(window.location.search).get('c') || null;
+var _sb = null;
+try { _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
 var TOTALS = { sys: 8, b2b: 4, mig: 4, qs: 4 };
 var STATE = { sys: [], b2b: [], mig: [], qs: [], custom: [] };
 
@@ -483,12 +491,45 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* ── localStorage state ── */
-var LS_KEY = 'fz-onboarding-v1';
+/* ── State persistence ── */
+var LS_KEY = CLIENT_ID ? 'fz-' + CLIENT_ID : 'fz-onboarding-v1';
+var _saveTimer = null;
+
 function saveState() {
+  // 1. localStorage (instant, offline fallback)
   try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
+  // 2. Supabase (debounced 600ms, only when a client ID is present)
+  if (!CLIENT_ID || !_sb) return;
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function() {
+    _sb.from('clients')
+      .upsert({ id: CLIENT_ID, state: STATE, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+      .then(function(){}).catch(function(){});
+  }, 600);
 }
-function loadState() {
+
+function applyState() {
+  Object.keys(TOTALS).forEach(function(sec) {
+    for (var i = 0; i < TOTALS[sec]; i++) {
+      var cb = document.getElementById('cb-' + sec + '-' + i);
+      var tn = document.getElementById('tn-' + sec + '-' + i);
+      if (cb) cb.classList.remove('on');
+      if (tn) tn.classList.remove('done');
+    }
+    STATE[sec].forEach(function(i) {
+      var cb = document.getElementById('cb-' + sec + '-' + i);
+      var tn = document.getElementById('tn-' + sec + '-' + i);
+      if (cb) cb.classList.add('on');
+      if (tn) tn.classList.add('done');
+    });
+    updateSection(sec);
+  });
+  renderMeetings();
+  renderCustomTasks();
+}
+
+async function loadState() {
+  // Step 1: localStorage first (synchronous — instant UI with no flash)
   try {
     var raw = localStorage.getItem(LS_KEY);
     if (raw) {
@@ -502,17 +543,24 @@ function loadState() {
       }
     }
   } catch(e) {}
-  Object.keys(TOTALS).forEach(function(sec) {
-    STATE[sec].forEach(function(i) {
-      var cb = document.getElementById('cb-' + sec + '-' + i);
-      var tn = document.getElementById('tn-' + sec + '-' + i);
-      if (cb) cb.classList.add('on');
-      if (tn) tn.classList.add('done');
-    });
-    updateSection(sec);
-  });
-  renderMeetings();
-  renderCustomTasks();
+  applyState();
+
+  // Step 2: Supabase (async — overrides localStorage with authoritative state)
+  if (CLIENT_ID && _sb) {
+    try {
+      var res = await _sb.from('clients').select('state').eq('id', CLIENT_ID).maybeSingle();
+      if (res.data && res.data.state) {
+        var s = res.data.state;
+        STATE.sys    = Array.isArray(s.sys)    ? s.sys    : [];
+        STATE.b2b    = Array.isArray(s.b2b)    ? s.b2b    : [];
+        STATE.mig    = Array.isArray(s.mig)    ? s.mig    : [];
+        STATE.qs     = Array.isArray(s.qs)     ? s.qs     : [];
+        STATE.custom = Array.isArray(s.custom) ? s.custom : [];
+        applyState();
+        try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
+      }
+    } catch(e) {}
+  }
 }
 
 /* ── Fixed tasks ── */

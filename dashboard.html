@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floorzap — Onboarder Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon-fz2.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f0f2f5;
+  color: #111827;
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── Password gate ── */
+#gate {
+  position: fixed; inset: 0; background: #116FEA;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.gate-box {
+  background: #fff; border-radius: 16px; padding: 40px 36px;
+  width: 100%; max-width: 380px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  text-align: center;
+}
+.gate-logo { height: 36px; width: auto; margin-bottom: 24px; }
+.gate-box h2 { font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+.gate-box p { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+.gate-input {
+  width: 100%; font-size: 14px; font-family: inherit; color: #111827;
+  border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 14px;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 12px; background: #fafafa;
+}
+.gate-input:focus { border-color: #116FEA; box-shadow: 0 0 0 3px rgba(17,111,234,0.1); background: #fff; }
+.gate-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+.gate-btn {
+  width: 100%; background: #116FEA; color: #fff; border: none;
+  border-radius: 8px; padding: 11px; font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer; transition: background 0.12s;
+}
+.gate-btn:hover { background: #0f5fd4; }
+.gate-error { font-size: 12px; color: #ef4444; margin-top: 8px; min-height: 16px; }
+
+/* ── Header ── */
+.header {
+  background: #116FEA; padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(17,111,234,0.2);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-logo img { height: 32px; width: auto; display: block; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-label { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 500; }
+.add-client-btn {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; border-radius: 8px; padding: 7px 16px; font-size: 13px;
+  font-weight: 600; font-family: inherit; cursor: pointer;
+  transition: background 0.12s;
+}
+.add-client-btn:hover { background: rgba(255,255,255,0.28); }
+
+/* ── Main ── */
+.container { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.toolbar h2 { font-size: 16px; font-weight: 700; color: #111827; }
+.client-count { font-size: 13px; color: #9ca3af; font-weight: 500; margin-left: 8px; }
+
+/* ── Client grid ── */
+.client-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 12px;
+}
+
+/* ── Client card ── */
+.client-card {
+  background: #fff; border-radius: 14px; padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.client-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.05); }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.client-name { font-size: 15px; font-weight: 700; color: #111827; letter-spacing: -0.2px; line-height: 1.3; }
+.last-active { font-size: 11.5px; color: #9ca3af; font-weight: 500; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+
+.prog-track { height: 7px; background: #f3f4f6; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.prog-fill { height: 100%; border-radius: 4px; transition: width 0.4s cubic-bezier(.4,0,.2,1); background: linear-gradient(90deg, #116FEA, #3b8ef5); }
+.prog-fill.complete { background: linear-gradient(90deg, #16a34a, #22c55e); }
+.task-count { font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 16px; }
+.task-count.complete { color: #16a34a; font-weight: 600; }
+
+.card-actions { display: flex; gap: 8px; }
+.btn-open {
+  flex: 1; background: #116FEA; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12.5px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background 0.12s; text-align: center; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-open:hover { background: #0f5fd4; }
+.btn-copy {
+  background: #f3f4f6; color: #374151; border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12.5px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background 0.12s;
+}
+.btn-copy:hover { background: #e5e7eb; }
+.btn-copy.copied { background: #f0fdf4; color: #16a34a; }
+
+/* ── Empty state ── */
+.empty-state {
+  grid-column: 1 / -1; text-align: center;
+  padding: 60px 20px; color: #9ca3af;
+}
+.empty-state svg { opacity: 0.35; margin-bottom: 16px; }
+.empty-state p { font-size: 14px; }
+.empty-state strong { display: block; font-size: 16px; font-weight: 700; color: #6b7280; margin-bottom: 6px; }
+
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center;
+  z-index: 500; padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 16px; padding: 32px 28px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.modal h3 { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+.modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+.modal-input {
+  width: 100%; font-size: 14px; font-family: inherit; color: #111827;
+  border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 14px;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 16px; background: #fafafa;
+}
+.modal-input:focus { border-color: #116FEA; box-shadow: 0 0 0 3px rgba(17,111,234,0.1); background: #fff; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel {
+  background: #f3f4f6; color: #374151; border: none; border-radius: 8px;
+  padding: 9px 18px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+}
+.btn-cancel:hover { background: #e5e7eb; }
+.btn-submit {
+  background: #116FEA; color: #fff; border: none; border-radius: 8px;
+  padding: 9px 20px; font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background 0.12s;
+}
+.btn-submit:hover { background: #0f5fd4; }
+.btn-submit:disabled { background: #93c5fd; cursor: default; }
+
+/* Success state inside modal */
+.modal-success { display: none; }
+.modal-success.show { display: block; }
+.modal-form.hide { display: none; }
+.url-box {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 10px 14px; font-size: 13px; color: #374151; word-break: break-all;
+  margin-bottom: 16px; line-height: 1.5;
+}
+.btn-copy-url {
+  width: 100%; background: #116FEA; color: #fff; border: none; border-radius: 8px;
+  padding: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+  margin-bottom: 10px; transition: background 0.12s;
+}
+.btn-copy-url:hover { background: #0f5fd4; }
+.btn-copy-url.copied { background: #16a34a; }
+.btn-done {
+  width: 100%; background: #f3f4f6; color: #374151; border: none; border-radius: 8px;
+  padding: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+}
+.btn-done:hover { background: #e5e7eb; }
+
+/* ── Live indicator ── */
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+  display: inline-block; margin-right: 5px;
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.4);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+  70%  { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+
+@media (max-width: 540px) {
+  .container { padding: 20px 12px 60px; }
+  .client-grid { grid-template-columns: 1fr; }
+  .header { padding: 12px 16px; }
+  .header-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password gate -->
+<div id="gate">
+  <div class="gate-box">
+    <img class="gate-logo" src="Logo - White.png" alt="Floorzap"
+         onerror="this.style.display='none'">
+    <h2>Onboarder Dashboard</h2>
+    <p>Enter your password to continue</p>
+    <input class="gate-input" id="gate-input" type="password"
+           placeholder="Password" onkeydown="gateKey(event)">
+    <button class="gate-btn" onclick="gateSubmit()">Sign in</button>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
+
+<!-- Dashboard app (hidden until authenticated) -->
+<div id="app" style="display:none">
+
+  <div class="header">
+    <div class="header-logo">
+      <img src="Logo - White.png" alt="Floorzap">
+    </div>
+    <div class="header-right">
+      <span class="header-label"><span class="live-dot"></span>Live</span>
+      <button class="add-client-btn" onclick="openModal()">+ Add client</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="toolbar">
+      <div>
+        <span style="font-size:16px;font-weight:700;color:#111827;">Active clients</span>
+        <span class="client-count" id="client-count"></span>
+      </div>
+    </div>
+    <div class="client-grid" id="client-grid">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect x="8" y="10" width="32" height="30" rx="4" stroke="#9ca3af" stroke-width="2.5"/>
+          <path d="M16 20h16M16 27h10" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <strong>No clients yet</strong>
+        <p>Click "+ Add client" to create your first onboarding link.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Add client modal -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="backdropClick(event)">
+  <div class="modal">
+
+    <div class="modal-form" id="modal-form">
+      <h3>Add new client</h3>
+      <p>Enter the company name — we'll generate a unique onboarding link for them.</p>
+      <input class="modal-input" id="company-input" type="text"
+             placeholder="Company name" maxlength="80" onkeydown="modalKey(event)">
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-submit" id="submit-btn" onclick="submitClient()">Create link</button>
+      </div>
+    </div>
+
+    <div class="modal-success" id="modal-success">
+      <h3>Client created!</h3>
+      <p>Share this link with <strong id="success-name"></strong>. Save it in HubSpot as their "Onboarding Checklist URL".</p>
+      <div class="url-box" id="success-url"></div>
+      <button class="btn-copy-url" id="copy-url-btn" onclick="copyClientUrl()">Copy link</button>
+      <button class="btn-done" onclick="closeModal()">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── Config ── */
+var SUPABASE_URL = 'https://abszmmrjaxqpnjomfbxd.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFic3ptbXJqYXhxcG5qb21mYnhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNzUxMTYsImV4cCI6MjA5NDk1MTExNn0.5aPz4IHoINh1sgRixDwI4S5-KykJCuYMQOiONYVqkC4';
+var DASHBOARD_PASSWORD = 'floorzap2026'; // Change this to your preferred password
+
+var _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var _clients = {}; // keyed by client id
+var _newClientUrl = '';
+var FIXED_TOTAL = 20;
+
+/* ── Password gate ── */
+function gateKey(e) { if (e.key === 'Enter') gateSubmit(); }
+function gateSubmit() {
+  var val = document.getElementById('gate-input').value;
+  var err = document.getElementById('gate-error');
+  var inp = document.getElementById('gate-input');
+  if (val === DASHBOARD_PASSWORD) {
+    sessionStorage.setItem('fz-dash-auth', '1');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  } else {
+    inp.classList.add('error');
+    err.textContent = 'Incorrect password. Try again.';
+    inp.value = '';
+    setTimeout(function() { inp.classList.remove('error'); err.textContent = ''; }, 2500);
+  }
+}
+
+// Skip gate if already authenticated this session
+if (sessionStorage.getItem('fz-dash-auth') === '1') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+/* ── Init ── */
+async function init() {
+  await loadClients();
+  subscribeRealtime();
+}
+
+/* ── Load all clients ── */
+async function loadClients() {
+  var res = await _sb.from('clients').select('*').order('updated_at', { ascending: false });
+  if (res.data) {
+    _clients = {};
+    res.data.forEach(function(row) { _clients[row.id] = row; });
+    renderGrid();
+  }
+}
+
+/* ── Supabase Realtime ── */
+function subscribeRealtime() {
+  _sb.channel('clients-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, function(payload) {
+      var row = payload.new || payload.old;
+      if (!row) return;
+      if (payload.eventType === 'DELETE') {
+        delete _clients[row.id];
+      } else {
+        _clients[row.id] = row;
+      }
+      renderGrid();
+    })
+    .subscribe();
+}
+
+/* ── Render ── */
+function renderGrid() {
+  var grid = document.getElementById('client-grid');
+  var ids = Object.keys(_clients).sort(function(a, b) {
+    return new Date(_clients[b].updated_at) - new Date(_clients[a].updated_at);
+  });
+  var count = document.getElementById('client-count');
+  count.textContent = ids.length ? '(' + ids.length + ')' : '';
+
+  if (ids.length === 0) {
+    grid.innerHTML = '<div class="empty-state">'
+      + '<svg width="48" height="48" viewBox="0 0 48 48" fill="none">'
+      + '<rect x="8" y="10" width="32" height="30" rx="4" stroke="#9ca3af" stroke-width="2.5"/>'
+      + '<path d="M16 20h16M16 27h10" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"/>'
+      + '</svg><strong>No clients yet</strong>'
+      + '<p>Click "+ Add client" to create your first onboarding link.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  ids.forEach(function(id) {
+    grid.appendChild(buildCard(_clients[id]));
+  });
+}
+
+function buildCard(row) {
+  var state = row.state || {};
+  var done = (state.sys   ? state.sys.length   : 0)
+           + (state.b2b   ? state.b2b.length   : 0)
+           + (state.mig   ? state.mig.length   : 0)
+           + (state.qs    ? state.qs.length    : 0);
+  var pct = Math.round(done / FIXED_TOTAL * 100);
+  var complete = done === FIXED_TOTAL;
+
+  var clientUrl = buildClientUrl(row.id);
+
+  var card = document.createElement('div');
+  card.className = 'client-card';
+  card.id = 'card-' + row.id;
+  card.innerHTML =
+    '<div class="card-top">'
+    +   '<div class="client-name">' + escHtml(row.name) + '</div>'
+    +   '<div class="last-active">' + relativeTime(row.updated_at) + '</div>'
+    + '</div>'
+    + '<div class="prog-track"><div class="prog-fill' + (complete ? ' complete' : '') + '" style="width:' + pct + '%"></div></div>'
+    + '<div class="task-count' + (complete ? ' complete' : '') + '">'
+    +   (complete ? '✓ All tasks complete' : done + ' of ' + FIXED_TOTAL + ' tasks complete')
+    + '</div>'
+    + '<div class="card-actions">'
+    +   '<a class="btn-open" href="' + escHtml(clientUrl) + '" target="_blank">Open checklist ↗</a>'
+    +   '<button class="btn-copy" onclick="copyCardUrl(this, \'' + escHtml(clientUrl) + '\')">Copy link</button>'
+    + '</div>';
+  return card;
+}
+
+function updateCard(row) {
+  var existing = document.getElementById('card-' + row.id);
+  if (!existing) { renderGrid(); return; }
+  var fresh = buildCard(row);
+  existing.replaceWith(fresh);
+}
+
+/* ── Add client ── */
+function openModal() {
+  document.getElementById('modal-form').classList.remove('hide');
+  document.getElementById('modal-success').classList.remove('show');
+  document.getElementById('company-input').value = '';
+  document.getElementById('modal-backdrop').classList.add('open');
+  setTimeout(function() { document.getElementById('company-input').focus(); }, 50);
+}
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  _newClientUrl = '';
+}
+function backdropClick(e) { if (e.target === e.currentTarget) closeModal(); }
+function modalKey(e) { if (e.key === 'Enter') submitClient(); }
+
+async function submitClient() {
+  var name = document.getElementById('company-input').value.trim();
+  if (!name) return;
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Creating…';
+
+  var id = slugify(name) + '-' + randomSuffix();
+  var res = await _sb.from('clients').insert({
+    id: id, name: name,
+    state: { sys: [], b2b: [], mig: [], qs: [], custom: [] }
+  }).select().single();
+
+  btn.disabled = false; btn.textContent = 'Create link';
+  if (res.error) { alert('Error: ' + res.error.message); return; }
+
+  _newClientUrl = buildClientUrl(id);
+  _clients[id] = res.data;
+  renderGrid();
+
+  document.getElementById('success-name').textContent = name;
+  document.getElementById('success-url').textContent = _newClientUrl;
+  document.getElementById('copy-url-btn').textContent = 'Copy link';
+  document.getElementById('copy-url-btn').classList.remove('copied');
+  document.getElementById('modal-form').classList.add('hide');
+  document.getElementById('modal-success').classList.add('show');
+}
+
+function copyClientUrl() {
+  var btn = document.getElementById('copy-url-btn');
+  navigator.clipboard.writeText(_newClientUrl).then(function() {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = _newClientUrl; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyCardUrl(btn, url) {
+  navigator.clipboard.writeText(url).then(function() {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = url; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Helpers ── */
+function buildClientUrl(id) {
+  return window.location.href.replace('dashboard.html', 'index.html').split('?')[0] + '?c=' + id;
+}
+function slugify(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 40);
+}
+function randomSuffix() { return Math.random().toString(36).substring(2, 6); }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function relativeTime(ts) {
+  if (!ts) return 'Never';
+  var diff = Math.floor((Date.now() - new Date(ts)) / 1000);
+  if (diff < 60)   return 'Just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+// Auto-start if already authenticated
+if (sessionStorage.getItem('fz-dash-auth') === '1') init();
+</script>
+</body>
+</html>
