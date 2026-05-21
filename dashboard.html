@@ -307,7 +307,7 @@ body {
         <option value="">Assign to onboarder…</option>
         <option value="David">David</option>
         <option value="JB">JB</option>
-        <option value="Madi">Madi</option>
+        <option value="Maddi">Maddi</option>
         <option value="Valentin">Valentin</option>
         <option value="Amber">Amber</option>
       </select>
@@ -354,11 +354,11 @@ var _clients = {}; // keyed by client id
 var _newClientUrl = '';
 var FIXED_TOTAL = 20;
 
-var ONBOARDERS = ['David', 'JB', 'Madi', 'Valentin', 'Amber'];
+var ONBOARDERS = ['David', 'JB', 'Maddi', 'Valentin', 'Amber'];
 var ONBOARDER_COLORS = {
   'David':    '#116FEA',
   'JB':       '#7c3aed',
-  'Madi':     '#db2777',
+  'Maddi':    '#db2777',
   'Valentin': '#059669',
   'Amber':    '#d97706'
 };
@@ -446,7 +446,6 @@ function renderSections() {
 
     var isOpen = openState[name];
     var color = ONBOARDER_COLORS[name] || '#116FEA';
-    var initials = name.length >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
     var badge = clients.length === 1 ? '1 client' : clients.length + ' clients';
 
     var section = document.createElement('div');
@@ -455,7 +454,7 @@ function renderSections() {
 
     section.innerHTML =
       '<div class="ob-header" onclick="toggleSection(\'' + escHtml(name) + '\')">'
-      + '<div class="ob-avatar" style="background:' + color + '">' + escHtml(initials) + '</div>'
+      + '<div class="ob-avatar" style="background:' + color + '"></div>'
       + '<div class="ob-title">' + escHtml(name) + '</div>'
       + '<div class="ob-badge">' + badge + '</div>'
       + '<svg class="ob-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">'
