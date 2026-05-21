@@ -117,6 +117,12 @@ body {
 }
 .btn-copy:hover { background: #e5e7eb; }
 .btn-copy.copied { background: #f0fdf4; color: #16a34a; }
+.btn-delete {
+  background: #f3f4f6; color: #9ca3af; border: none; border-radius: 8px;
+  padding: 8px 10px; font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: background 0.12s, color 0.12s; line-height: 1;
+}
+.btn-delete:hover { background: #fee2e2; color: #dc2626; }
 
 /* ── Empty state ── */
 .empty-state {
@@ -281,6 +287,21 @@ body {
   </div>
 </div>
 
+<!-- Delete confirmation modal -->
+<div class="modal-backdrop" id="delete-backdrop" onclick="deleteBackdropClick(event)">
+  <div class="modal">
+    <h3 style="color:#111827;">Delete client?</h3>
+    <p id="delete-modal-text" style="margin-bottom:24px;"></p>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#b91c1c;margin-bottom:20px;">
+      ⚠️ This will permanently remove the client and all their checklist progress. This cannot be undone.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button id="confirm-delete-btn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;" onclick="confirmDelete()">Delete client</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ── Config ── */
 var SUPABASE_URL = 'https://abszmmrjaxqpnjomfbxd.supabase.co';
@@ -400,6 +421,7 @@ function buildCard(row) {
     + '<div class="card-actions">'
     +   '<a class="btn-open" href="' + escHtml(clientUrl) + '" target="_blank">Open checklist ↗</a>'
     +   '<button class="btn-copy" onclick="copyCardUrl(this, \'' + escHtml(clientUrl) + '\')">Copy link</button>'
+    +   '<button class="btn-delete" title="Delete client" onclick="openDeleteModal(\'' + escHtml(row.id) + '\', \'' + escHtml(row.name) + '\')">🗑</button>'
     + '</div>';
   return card;
 }
@@ -498,6 +520,36 @@ function relativeTime(ts) {
   if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
   if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
   return Math.floor(diff / 86400) + 'd ago';
+}
+
+/* ── Delete client ── */
+var _deleteTargetId = null;
+
+function openDeleteModal(id, name) {
+  _deleteTargetId = id;
+  document.getElementById('delete-modal-text').textContent =
+    'Are you sure you want to delete "' + name + '"?';
+  document.getElementById('delete-backdrop').classList.add('open');
+}
+function closeDeleteModal() {
+  document.getElementById('delete-backdrop').classList.remove('open');
+  _deleteTargetId = null;
+}
+function deleteBackdropClick(e) { if (e.target === e.currentTarget) closeDeleteModal(); }
+
+async function confirmDelete() {
+  if (!_deleteTargetId) return;
+  var btn = document.getElementById('confirm-delete-btn');
+  btn.disabled = true; btn.textContent = 'Deleting…';
+
+  var res = await _sb.from('clients').delete().eq('id', _deleteTargetId);
+  btn.disabled = false; btn.textContent = 'Delete client';
+
+  if (res.error) { alert('Error: ' + res.error.message); return; }
+
+  delete _clients[_deleteTargetId];
+  renderGrid();
+  closeDeleteModal();
 }
 
 // Auto-start if already authenticated
