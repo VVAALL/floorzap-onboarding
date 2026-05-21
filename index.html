@@ -503,8 +503,10 @@ function saveState() {
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(function() {
     _sb.from('clients')
-      .upsert({ id: CLIENT_ID, state: STATE, updated_at: new Date().toISOString() }, { onConflict: 'id' })
-      .then(function(){}).catch(function(){});
+      .update({ state: STATE, updated_at: new Date().toISOString() })
+      .eq('id', CLIENT_ID)
+      .then(function(res){ if (res.error) console.error('Supabase save error:', res.error); })
+      .catch(function(e){ console.error('Supabase save failed:', e); });
   }, 600);
 }
 
