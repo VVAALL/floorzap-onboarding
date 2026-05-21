@@ -433,7 +433,7 @@ function renderSections() {
     if (existing) {
       openState[name] = existing.classList.contains('open');
     } else {
-      openState[name] = sessionStorage.getItem('fz-dash-section-' + name) !== 'closed';
+      openState[name] = sessionStorage.getItem('fz-dash-section-' + name) === 'open';
     }
   });
 
