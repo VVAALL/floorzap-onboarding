@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="favicon-fz.png">
+<link rel="icon" type="image/png" href="favicon-fz2.png">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,6 +33,9 @@ body {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 4px 24px rgba(17,111,234,0.25);
+  position: sticky;
+  top: 16px;
+  z-index: 100;
 }
 .header-logo img { height: 36px; width: auto; display: block; }
 .header-help {
@@ -214,6 +217,34 @@ body {
 }
 .empty-custom span { display: block; font-size: 22px; margin-bottom: 6px; opacity: 0.5; }
 
+/* ── Done badge ── */
+.done-badge { display: none; }
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+  body { padding: 12px 10px 60px; }
+  .header { padding: 12px 16px; top: 10px; border-radius: 12px; }
+  .header-logo img { height: 28px; }
+  .header-help span { display: none; } /* hide "Help center" text, keep icon */
+  .card-header { padding: 13px 14px; gap: 8px; }
+  .card-left { gap: 10px; }
+  .card-icon { width: 30px; height: 30px; border-radius: 8px; }
+  .card-title { font-size: 13px; }
+  .card-meta { font-size: 11px; }
+  .card-right { gap: 6px; }
+  .timing-pill { display: none; } /* hide timing label on mobile to save space */
+  .task { padding: 11px 14px; gap: 10px; }
+  .task-name { font-size: 13px; }
+  .task-desc { font-size: 11.5px; }
+  .task-links { gap: 10px; }
+  .note { padding: 9px 14px; font-size: 12px; }
+  .meeting-row { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 14px; }
+  .join-btn { align-self: flex-start; }
+  .add-task-row { padding: 10px 14px; gap: 8px; }
+  .custom-task { padding: 10px 14px; }
+  .meetings-header, .custom-header { padding: 13px 14px; }
+}
+
 </style>
 </head>
 <body>
@@ -225,7 +256,7 @@ body {
     </div>
     <a class="header-help" href="https://help.floorzap.com" target="_blank">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 11.5v-.5a2 2 0 0 1 1.06-1.77l.13-.07A2 2 0 0 0 8 5.5a2 2 0 0 0-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.5" r=".75" fill="currentColor"/></svg>
-      Help center
+      <span>Help center</span>
     </a>
   </div>
 
@@ -244,7 +275,7 @@ body {
   </div>
 
   <!-- System Configuration -->
-  <div class="card" id="c-sys">
+  <div class="card collapsed" id="c-sys">
     <div class="card-header" onclick="toggleCard('c-sys')">
       <div class="card-left">
         <div class="card-icon" style="background:#eff6ff;">
@@ -256,7 +287,8 @@ body {
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-blue">Before 2-week</span>
+        <span class="pill pill-blue timing-pill">Before 2-week</span>
+        <span class="pill pill-green done-badge" id="badge-sys">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
@@ -273,7 +305,7 @@ body {
   </div>
 
   <!-- B2B Integration -->
-  <div class="card" id="c-b2b">
+  <div class="card collapsed" id="c-b2b">
     <div class="card-header" onclick="toggleCard('c-b2b')">
       <div class="card-left">
         <div class="card-icon" style="background:#f0fdf4;">
@@ -285,7 +317,8 @@ body {
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-blue">Before 2-week</span>
+        <span class="pill pill-blue timing-pill">Before 2-week</span>
+        <span class="pill pill-green done-badge" id="badge-b2b">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
@@ -322,7 +355,7 @@ Regards,</div>
   </div>
 
   <!-- Data Migration -->
-  <div class="card" id="c-mig">
+  <div class="card collapsed" id="c-mig">
     <div class="card-header" onclick="toggleCard('c-mig')">
       <div class="card-left">
         <div class="card-icon" style="background:#fffbeb;">
@@ -334,7 +367,8 @@ Regards,</div>
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-amber">Allow 2–3 weeks</span>
+        <span class="pill pill-amber timing-pill">Allow 2–3 weeks</span>
+        <span class="pill pill-green done-badge" id="badge-mig">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
@@ -348,7 +382,7 @@ Regards,</div>
   </div>
 
   <!-- Quick Start Training -->
-  <div class="card" id="c-qs">
+  <div class="card collapsed" id="c-qs">
     <div class="card-header" onclick="toggleCard('c-qs')">
       <div class="card-left">
         <div class="card-icon" style="background:#eff6ff;">
@@ -360,7 +394,8 @@ Regards,</div>
         </div>
       </div>
       <div class="card-right">
-        <span class="pill pill-blue">Before 2-week</span>
+        <span class="pill pill-blue timing-pill">Before 2-week</span>
+        <span class="pill pill-green done-badge" id="badge-qs">✓ Complete</span>
         <div class="chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
@@ -493,11 +528,14 @@ function tick(sec, i) {
 function updateSection(sec) {
   var done = STATE[sec].length;
   var total = TOTALS[sec];
-  var meta = document.getElementById('meta-' + sec);
+  var meta  = document.getElementById('meta-' + sec);
+  var badge = document.getElementById('badge-' + sec);
+  var complete = done === total;
   if (meta) {
-    if (done === total) { meta.textContent = 'All done ✓'; meta.style.color = '#16a34a'; }
-    else { meta.textContent = total + (sec === 'qs' ? ' sessions' : ' tasks'); meta.style.color = ''; }
+    meta.textContent = complete ? 'All done' : done + ' of ' + total + (sec === 'qs' ? ' sessions' : ' tasks');
+    meta.style.color = complete ? '#16a34a' : '';
   }
+  if (badge) badge.style.display = complete ? 'inline-block' : 'none';
 }
 
 /* ── Custom tasks ── */
