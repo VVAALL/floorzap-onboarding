@@ -603,8 +603,9 @@ function buildCard(row, showOnboarder) {
   var card = document.createElement('div');
   card.className = 'client-card';
   card.id = 'card-' + row.id;
-  var safeId   = escHtml(row.id);
+  var safeId  = escHtml(row.id);
   var safeName = escHtml(row.name);
+  var safeUrl  = escHtml(clientUrl);
   card.innerHTML =
     '<div class="card-top">'
     +   '<div class="client-name">' + safeName + '</div>'
@@ -612,13 +613,13 @@ function buildCard(row, showOnboarder) {
     +     obPill
     +     '<div class="last-active">' + relativeTime(row.updated_at) + '</div>'
     +     '<div class="card-menu-wrap">'
-    +       '<button class="card-menu-btn" onclick="toggleCardMenu(\'' + safeId + '\',event)" title="More options">'
+    +       '<button class="card-menu-btn" id="menubtn-' + safeId + '" title="More options">'
     +         '<svg width="15" height="15" viewBox="0 0 15 15" fill="currentColor">'
     +           '<circle cx="7.5" cy="3" r="1.2"/><circle cx="7.5" cy="7.5" r="1.2"/><circle cx="7.5" cy="12" r="1.2"/>'
     +         '</svg>'
     +       '</button>'
     +       '<div class="card-menu-dropdown" id="menu-' + safeId + '">'
-    +         '<button class="card-menu-item" onclick="closeAllMenus();openDeleteModal(\'' + safeId + '\',\'' + safeName + '\')">'
+    +         '<button class="card-menu-item" id="delbtn-' + safeId + '">'
     +           '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">'
     +           '<polyline points="1,3 12,3"/><path d="M3 3V11a1 1 0 001 1h5a1 1 0 001-1V3"/><path d="M4.5 3V2a.5.5 0 01.5-.5h3a.5.5 0 01.5.5v1"/>'
     +           '</svg>'
@@ -633,9 +634,21 @@ function buildCard(row, showOnboarder) {
     +   (complete ? '✓ All tasks complete' : done + ' of ' + FIXED_TOTAL + ' tasks complete')
     + '</div>'
     + '<div class="card-actions">'
-    +   '<a class="btn-open" href="' + escHtml(clientUrl) + '" target="_blank">Open checklist ↗</a>'
-    +   '<button class="btn-copy" onclick="copyCardUrl(this, \'' + escHtml(clientUrl) + '\')">Copy link</button>'
+    +   '<a class="btn-open" href="' + safeUrl + '" target="_blank">Open checklist ↗</a>'
+    +   '<button class="btn-copy" id="copybtn-' + safeId + '">Copy link</button>'
     + '</div>';
+
+  card.querySelector('#menubtn-' + row.id).addEventListener('click', function(e) {
+    toggleCardMenu(row.id, e);
+  });
+  card.querySelector('#delbtn-' + row.id).addEventListener('click', function() {
+    closeAllMenus();
+    openDeleteModal(row.id, row.name);
+  });
+  card.querySelector('#copybtn-' + row.id).addEventListener('click', function() {
+    copyCardUrl(this, clientUrl);
+  });
+
   return card;
 }
 
