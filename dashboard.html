@@ -754,7 +754,7 @@ function copyCardUrl(btn, url) {
 
 /* ── Helpers ── */
 function buildClientUrl(id) {
-  return window.location.href.replace('dashboard.html', 'index.html').split('?')[0] + '?c=' + id;
+  return window.location.origin + '/?c=' + id;
 }
 function slugify(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 40);
