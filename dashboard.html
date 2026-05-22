@@ -75,9 +75,20 @@ body {
 .sidebar {
   width: 220px; flex-shrink: 0;
   background: #fff; border-right: 1px solid #e5e7eb;
-  padding: 16px 10px 40px; position: sticky; top: 65px;
+  padding: 16px 10px 16px; position: sticky; top: 65px;
   height: calc(100vh - 65px); overflow-y: auto;
+  display: flex; flex-direction: column;
 }
+.sidebar-nav { flex: 1; }
+.btn-logout {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; padding: 8px 10px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 500; color: #6b7280;
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; transition: background 0.12s, color 0.12s;
+  margin-top: 4px;
+}
+.btn-logout:hover { background: #fef2f2; color: #dc2626; }
 
 .main-content { flex: 1; padding: 28px 28px 80px; min-width: 0; }
 
@@ -334,17 +345,27 @@ body {
   <div class="app-shell">
     <!-- Left sidebar nav -->
     <div class="sidebar">
-      <div class="nav-item active" id="nav-recent" onclick="setNav('recent')">
-        <svg class="nav-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M7 4.5V7l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Recent
-        <span class="nav-count" id="count-recent">—</span>
+      <div class="sidebar-nav">
+        <div class="nav-item active" id="nav-recent" onclick="setNav('recent')">
+          <svg class="nav-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 4.5V7l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Recent
+          <span class="nav-count" id="count-recent">—</span>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-label">Onboarders</div>
+        <div id="nav-onboarders"></div>
       </div>
       <div class="nav-divider"></div>
-      <div class="nav-label">Onboarders</div>
-      <div id="nav-onboarders"></div>
+      <button class="btn-logout" onclick="logout()">
+        <svg class="nav-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12H2.5A1.5 1.5 0 011 10.5v-7A1.5 1.5 0 012.5 2H5"/>
+          <path d="M9.5 10l3-3-3-3M12.5 7H5.5"/>
+        </svg>
+        Log out
+      </button>
     </div>
 
     <!-- Main content -->
@@ -438,6 +459,12 @@ var ONBOARDER_COLORS = {
 };
 
 /* ── Password gate ── */
+function logout() {
+  sessionStorage.removeItem('fz-dash-auth');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('gate-input').value = '';
+}
 function gateKey(e) { if (e.key === 'Enter') gateSubmit(); }
 function gateSubmit() {
   var val = document.getElementById('gate-input').value;
