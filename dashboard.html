@@ -24,15 +24,15 @@ body {
 /* ── Password gate ── */
 #gate {
   position: fixed; inset: 0; background: #116FEA;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 28px; z-index: 1000;
 }
 .gate-box {
   background: #fff; border-radius: 16px; padding: 40px 36px;
   width: 100%; max-width: 380px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
   text-align: center;
 }
-.gate-logo { height: 36px; width: auto; margin-bottom: 24px; }
+.gate-logo { height: 40px; width: auto; }
 .gate-box h2 { font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 6px; }
 .gate-box p { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
 .gate-input {
@@ -306,9 +306,9 @@ body {
 
 <!-- Password gate -->
 <div id="gate">
+  <img class="gate-logo" src="Logo - White.png" alt="Floorzap"
+       onerror="this.style.display='none'">
   <div class="gate-box">
-    <img class="gate-logo" src="Logo - White.png" alt="Floorzap"
-         onerror="this.style.display='none'">
     <h2>Onboarder Dashboard</h2>
     <p>Enter your password to continue</p>
     <input class="gate-input" id="gate-input" type="password"
