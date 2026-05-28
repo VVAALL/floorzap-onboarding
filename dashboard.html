@@ -401,6 +401,8 @@ body {
       <p>Enter the company name and assign an onboarding specialist.</p>
       <input class="modal-input" id="company-input" type="text"
              placeholder="Company name" maxlength="80" onkeydown="modalKey(event)">
+      <input class="modal-input" id="floorzap-url-input" type="text"
+             placeholder="Floorzap URL (e.g. acme.floorzap.com)" maxlength="100" onkeydown="modalKey(event)">
       <select class="modal-select" id="onboarder-select">
         <option value="">Assign to onboarder…</option>
         <option value="David">David</option>
@@ -437,6 +439,21 @@ body {
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
       <button id="confirm-delete-btn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;" onclick="confirmDelete()">Delete client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Set Floorzap URL modal -->
+<div class="modal-backdrop" id="set-url-backdrop" onclick="setUrlBackdropClick(event)">
+  <div class="modal">
+    <h3 style="color:#111827;">Set Floorzap URL</h3>
+    <p id="set-url-modal-text" style="margin-bottom:16px;"></p>
+    <input class="modal-input" id="set-url-input" type="text"
+           placeholder="e.g. acme.floorzap.com" maxlength="100"
+           onkeydown="if(event.key==='Enter')confirmSetUrl()">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSetUrlModal()">Cancel</button>
+      <button class="btn-submit" id="set-url-submit-btn" onclick="confirmSetUrl()">Save</button>
     </div>
   </div>
 </div>
@@ -650,6 +667,13 @@ function buildCard(row, showOnboarder) {
     +         '</svg>'
     +       '</button>'
     +       '<div class="card-menu-dropdown" id="menu-' + safeId + '">'
+    +         '<button class="card-menu-item" id="fzbtn-' + safeId + '">'
+    +           '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+    +           '<path d="M5 2H2a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V8"/>'
+    +           '<path d="M8 1h4v4"/><path d="M13 1L6.5 7.5"/>'
+    +           '</svg>'
+    +           'Set Floorzap URL'
+    +         '</button>'
     +         '<button class="card-menu-item" id="delbtn-' + safeId + '">'
     +           '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">'
     +           '<polyline points="1,3 12,3"/><path d="M3 3V11a1 1 0 001 1h5a1 1 0 001-1V3"/><path d="M4.5 3V2a.5.5 0 01.5-.5h3a.5.5 0 01.5.5v1"/>'
@@ -672,6 +696,10 @@ function buildCard(row, showOnboarder) {
   card.querySelector('#menubtn-' + row.id).addEventListener('click', function(e) {
     toggleCardMenu(row.id, e);
   });
+  card.querySelector('#fzbtn-' + row.id).addEventListener('click', function() {
+    closeAllMenus();
+    openSetUrlModal(row.id, row.name, row.floorzap_url || '');
+  });
   card.querySelector('#delbtn-' + row.id).addEventListener('click', function() {
     closeAllMenus();
     openDeleteModal(row.id, row.name);
@@ -688,6 +716,7 @@ function openModal() {
   document.getElementById('modal-form').classList.remove('hide');
   document.getElementById('modal-success').classList.remove('show');
   document.getElementById('company-input').value = '';
+  document.getElementById('floorzap-url-input').value = '';
   document.getElementById('onboarder-select').value = '';
   document.getElementById('modal-backdrop').classList.add('open');
   setTimeout(function() { document.getElementById('company-input').focus(); }, 50);
@@ -701,6 +730,7 @@ function modalKey(e) { if (e.key === 'Enter') submitClient(); }
 
 async function submitClient() {
   var name = document.getElementById('company-input').value.trim();
+  var floorzapUrl = document.getElementById('floorzap-url-input').value.trim();
   var onboarder = document.getElementById('onboarder-select').value;
   if (!name) { document.getElementById('company-input').focus(); return; }
   if (!onboarder) { document.getElementById('onboarder-select').focus(); return; }
@@ -710,6 +740,7 @@ async function submitClient() {
   var id = slugify(name) + '-' + randomSuffix();
   var res = await _sb.from('clients').insert({
     id: id, name: name, onboarder: onboarder,
+    floorzap_url: floorzapUrl || null,
     state: { sys: [], b2b: [], mig: [], qs: [], custom: [] }
   }).select().single();
 
@@ -819,6 +850,42 @@ async function confirmDelete() {
   delete _clients[_deleteTargetId];
   renderMain();
   closeDeleteModal();
+}
+
+/* ── Set Floorzap URL ── */
+var _setUrlClientId = null;
+
+function openSetUrlModal(id, name, currentUrl) {
+  _setUrlClientId = id;
+  document.getElementById('set-url-modal-text').textContent =
+    'Enter the Floorzap URL for "' + name + '".';
+  document.getElementById('set-url-input').value = currentUrl;
+  document.getElementById('set-url-submit-btn').disabled = false;
+  document.getElementById('set-url-submit-btn').textContent = 'Save';
+  document.getElementById('set-url-backdrop').classList.add('open');
+  setTimeout(function() { document.getElementById('set-url-input').focus(); }, 50);
+}
+function closeSetUrlModal() {
+  document.getElementById('set-url-backdrop').classList.remove('open');
+  _setUrlClientId = null;
+}
+function setUrlBackdropClick(e) { if (e.target === e.currentTarget) closeSetUrlModal(); }
+
+async function confirmSetUrl() {
+  if (!_setUrlClientId) return;
+  var val = document.getElementById('set-url-input').value.trim();
+  var btn = document.getElementById('set-url-submit-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  var res = await _sb.from('clients')
+    .update({ floorzap_url: val || null, updated_at: new Date().toISOString() })
+    .eq('id', _setUrlClientId);
+
+  btn.disabled = false; btn.textContent = 'Save';
+  if (res.error) { alert('Error: ' + res.error.message); return; }
+
+  if (_clients[_setUrlClientId]) _clients[_setUrlClientId].floorzap_url = val || null;
+  closeSetUrlModal();
 }
 
 // Auto-start if already authenticated
